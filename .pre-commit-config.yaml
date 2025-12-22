@@ -1,0 +1,52 @@
+ci:
+  skip: [hatch-style, hatch-typing]
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-shebang-scripts-are-executable
+      - id: check-docstring-first
+      - id: debug-statements
+      - id: check-ast
+      - id: check-toml
+      - id: check-xml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: ['--fix=auto'] # Replace "auto" with "lf" to enforce Linux/Mac line endings or "crlf" for Windows
+
+  # The built-in `check-json` hook does not support JSON5 files (~= JSON with comments and trailing commas). To lint
+  # JSON5 files, use the `check-json5` hook instead.
+  - repo: https://gitlab.com/bmares/check-json5
+    rev: v1.0.0
+    hooks:
+      - id: check-json5
+
+  # Instead of using the `astral-sh/ruff-pre-commit` hook, use the Hatch "lint" environment. This ensures that settings
+  # and versions between the `pre-commit` hooks and the Hatch environment are aligned.
+  - repo: local
+    hooks:
+      - id: hatch-style
+        name: hatch ruff
+        entry: hatch run lint:style
+        language: system
+        types_or: [python, pyi, jupyter]
+        exclude: src/python_project_template/__version__.py
+        verbose: true
+
+  # Instead of using the `pre-commit/mirrors-mypy` hook, use the Hatch "lint" environment. Apart from ensuring that
+  # settings and versions between the `pre-commit` hooks and the Hatch environment are aligned, this additionally
+  # removes the need of manually typing out all typed dependencies here.
+  - repo: local
+    hooks:
+      - id: hatch-typing
+        name: hatch mypy
+        entry: hatch run lint:simple-typing
+        language: system
+        types_or: [python, pyi, jupyter]
+        exclude: src/python_project_template/__version__.py
+        verbose: true

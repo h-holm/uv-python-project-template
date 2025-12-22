@@ -1,0 +1,44 @@
+name: CodeQL Analysis
+
+on:
+  # Trigger a scan once a week.
+  schedule:
+    - cron: '0 0 * * 0'
+  # Allow this workflow to be called from other workflows.
+  workflow_call:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  run-codeql-analysis:
+    name: Run CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['python']
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+          config-file: ./.github/codeql/codeql-config.yaml
+
+      - name: Autobuild CodeQL
+        uses: github/codeql-action/autobuild@v4
+
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:${{ matrix.language }}'

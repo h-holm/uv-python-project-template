@@ -1,0 +1,34 @@
+{
+    "cSpell.words": [
+        "asyncio",
+        "behaviour",
+        "caplog",
+        "cicd",
+        "codeql",
+        "docstrings",
+        "editorconfig",
+        "flake8",
+        "gcloud",
+        "github",
+        "git",
+        "gitignore",
+        "isort",
+        "mypy",
+        "oidc",
+        "pydantic",
+        "pyproject",
+        "pytest",
+        "ruff",
+        "typer",
+    ],
+    "editor.formatOnSave": true,
+    "[markdown]": {
+        "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+    },
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+    "[toml]": {
+        "editor.defaultFormatter": "tamasfe.even-better-toml"
+    }
+}
