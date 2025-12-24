@@ -2,7 +2,7 @@
 *
 
 # ... except for the requirements and the application logic.
-!/requirements.txt
+!/uv.lock
 !/src
 
 # Just make sure to ignore unnecessary files inside the allowed directory/directories.

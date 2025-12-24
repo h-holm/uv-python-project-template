@@ -17,20 +17,15 @@ defaults:
     shell: bash
 
 jobs:
-  # Run the Python Unit Tests workflow.
-  unit-tests:
-    name: Python Unit Tests
-    uses: ./.github/workflows/unit-tests.yaml
-
-  # Run the Python formatting, linting and static type checking.
-  lint-and-type-check:
-    name: Linting and Type Checking
-    uses: ./.github/workflows/lint-and-type-check.yaml
+  # Run the Python unit tests, linting, formatting and static type checking.
+  code-quality-checks:
+    name: Code Quality Checks
+    uses: ./.github/workflows/code-quality.yaml
 
   # Build and push a container image to the GCP Artifact Registry.
   build-and-push-image:
     name: Build and Push Image
-    needs: [unit-tests, lint-and-type-check]
+    needs: [code-quality-checks]
     runs-on: ubuntu-latest
     environment: ${{ inputs.GITHUB_ENVIRONMENT }}
     env:

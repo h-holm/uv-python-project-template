@@ -73,7 +73,7 @@ def get_ordinal_suffix(integer: int) -> str:
     return {1: "st", 2: "nd", 3: "rd"}.get(abs(integer) % 10, "th")
 
 
-def pretty_log_dict(arguments: dict, header: tuple[str, str] = ("key", "value")) -> None:
+def pretty_log_dict(arguments: dict[str, Any], header: tuple[str, str] = ("key", "value")) -> None:
     """Log the keys and values of the input dictionary as a nicely-formatted table."""
     table = [list(header)]
     for k, v in arguments.items():
@@ -82,7 +82,7 @@ def pretty_log_dict(arguments: dict, header: tuple[str, str] = ("key", "value"))
         LOGGER.info(row)
 
 
-def kwargs_logger(func: Callable) -> Callable:
+def kwargs_logger(func: Callable[..., Any]) -> Callable[..., Any]:
     """Decorator that logs the input keyword arguments of the wrapped function."""
 
     @wraps(func)
