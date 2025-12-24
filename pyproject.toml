@@ -108,7 +108,7 @@ init_typed = true
 warn_required_dynamic_aliases = true
 
 [tool.pytest.ini_options]
-addopts = "--cov=src/uv_python_project_template --cov-report=term-missing --doctest-glob='*.md'"
+addopts = "--cov=src/uv_python_project_template --cov-report=term-missing --cov-fail-under=80 --doctest-glob='*.md'"
 asyncio_default_fixture_loop_scope = "function"
 asyncio_mode = "strict"
 minversion = "9.0.2"
