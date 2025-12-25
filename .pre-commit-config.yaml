@@ -1,5 +1,5 @@
 ci:
-  skip: [hatch-style, hatch-typing]
+  skip: [uv-ruff-lint, uv-ruff-format, uv-mypy]
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
