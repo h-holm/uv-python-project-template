@@ -2,11 +2,11 @@
 # Inspired by: https://github.com/astral-sh/uv-docker-example/blob/main/Dockerfile
 
 # Use an image with `uv` pre-installed.
-FROM ghcr.io/astral-sh/uv:0.9
+FROM ghcr.io/astral-sh/uv:0.9-python3.14-alpine
 
 # Setup a non-root user.
-RUN groupadd --system --gid 999 nonroot \
- && useradd --system --gid 999 --uid 999 --create-home nonroot
+RUN addgroup -S -g 1000 nonroot \
+    && adduser -S -D -G nonroot -u 1000 -h /home/nonroot nonroot
 
 # Install the project into `/app`.
 WORKDIR /app
