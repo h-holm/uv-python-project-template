@@ -1,0 +1,46 @@
+name: Code Quality Checks
+
+on:
+  # Allow this workflow to be called from other workflows.
+  workflow_call:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  code-quality-checks:
+    name: Code Quality Checks
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install `uv` ${{ vars.UV_VERSION }}
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ vars.UV_VERSION }}
+
+      - name: Print `uv` Version
+        run: uv --version
+
+      - name: Run Unit Tests
+        run: |-
+          uv run --group test pytest --verbose
+
+      - name: Run Linting
+        run: |-
+          uv run --group lint ruff check
+
+      - name: Run Formatting Check
+        run: |-
+          uv run --group lint ruff format --check
+
+      - name: Run Type Checking
+        run: |-
+          uv run --group lint mypy .

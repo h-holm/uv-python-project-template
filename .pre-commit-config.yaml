@@ -26,27 +26,41 @@ repos:
     hooks:
       - id: check-json5
 
-  # Instead of using the `astral-sh/ruff-pre-commit` hook, use the Hatch "lint" environment. This ensures that settings
-  # and versions between the `pre-commit` hooks and the Hatch environment are aligned.
+  # Ensure the `uv.lock` file is in sync with the `pyproject.toml` config.
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    # uv version.
+    rev: 0.9.18
+    hooks:
+      - id: uv-lock
+
+  # Instead of using the `astral-sh/ruff-pre-commit` hook, use `uv` and the "lint" dependency group defined in the
+  # `pyproject.toml`. This ensures that settings and versions between the `pre-commit` hooks and the `pyproject.toml`
+  # are aligned.
   - repo: local
     hooks:
-      - id: hatch-style
-        name: hatch ruff
-        entry: hatch run lint:style
+      - id: uv-ruff-lint
+        name: uv ruff lint
+        entry: uv run --group lint ruff check
         language: system
         types_or: [python, pyi, jupyter]
-        exclude: src/python_project_template/__version__.py
         verbose: true
 
-  # Instead of using the `pre-commit/mirrors-mypy` hook, use the Hatch "lint" environment. Apart from ensuring that
-  # settings and versions between the `pre-commit` hooks and the Hatch environment are aligned, this additionally
-  # removes the need of manually typing out all typed dependencies here.
+  # Same reasoning as above.
   - repo: local
     hooks:
-      - id: hatch-typing
-        name: hatch mypy
-        entry: hatch run lint:simple-typing
+      - id: uv-ruff-format
+        name: uv ruff format
+        entry: uv run --group lint ruff format --check
         language: system
         types_or: [python, pyi, jupyter]
-        exclude: src/python_project_template/__version__.py
+        verbose: true
+
+  # Same reasoning as above, but this time in order to replace the `pre-commit/mirrors-mypy` hook.
+  - repo: local
+    hooks:
+      - id: uv-mypy
+        name: uv mypy
+        entry: uv run --group lint mypy
+        language: system
+        types_or: [python, pyi, jupyter]
         verbose: true

@@ -1,5 +1,15 @@
 version: 2
 
+multi-ecosystem-groups:
+  python:
+    assignees:
+      - 'h-holm'
+    schedule:
+      interval: weekly
+    labels:
+      - 'dependencies'
+      - 'python'
+
 updates:
   # Maintain Docker dependencies.
   - package-ecosystem: docker
@@ -9,6 +19,9 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    labels:
+      - 'dependencies'
+      - 'docker'
 
   # Maintain GitHub Actions dependencies.
   - package-ecosystem: github-actions
@@ -22,14 +35,32 @@ updates:
       github-actions:
         patterns:
           - '*'
+    labels:
+      - 'dependencies'
+      - 'github-actions'
 
   # Maintain Python dependencies.
-  - package-ecosystem: pip
-    assignees:
-      - 'h-holm'
+  - package-ecosystem: uv
+    multi-ecosystem-group: python
     directory: '/'
-    schedule:
-      interval: weekly
+    patterns: ['*']
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types:
+          - 'patch'
+          - 'minor'
+      major:
+        update-types:
+          - 'major'
+    versioning-strategy: increase
+    allow:
+      - dependency-type: 'all'
+
+  - package-ecosystem: pip
+    multi-ecosystem-group: python
+    directory: '/'
+    patterns: ['*']
     open-pull-requests-limit: 5
     groups:
       minor-and-patch:

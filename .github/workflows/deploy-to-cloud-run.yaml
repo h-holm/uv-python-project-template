@@ -35,7 +35,7 @@ jobs:
             - 'src/**'
             - 'tests/**/*.py'
             - 'pyproject.toml'
-            - 'requirements**.txt'
+            - 'uv.lock'
             - 'Dockerfile'
             - '.dockerignore'
             - '.github/workflows/**'
