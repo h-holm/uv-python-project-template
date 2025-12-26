@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-9400d3.svg)](https://opensource.org/licenses/MIT)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![Mypy](https://img.shields.io/badge/type%20checked-mypy-039dfc)](https://github.com/python/mypy)
+[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)
 [![Pytest](https://img.shields.io/static/v1?label=‎&message=Pytest&logo=Pytest&color=b647c4&logoColor=white)](https://docs.pytest.org)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Deploy to Cloud Run](https://github.com/h-holm/uv-python-project-template/workflows/Deploy%20to%20Cloud%20Run/badge.svg)](https://github.com/h-holm/uv-python-project-template/actions/workflows/deploy-to-cloud-run.yaml)
@@ -21,8 +21,8 @@ Python application. The placeholder Python logic computes a Fibonacci number.
 [pyproject.toml](./pyproject.toml) file
 * (Sub-)dependency locking in the [uv.lock](./uv.lock) file
 * [ruff](https://github.com/astral-sh/ruff)-based linting and formatting
-* Static type checking using [mypy](https://github.com/python/mypy)
-* [pytest](https://docs.pytest.org) for unit tests with [coverage](https://coverage.readthedocs.io/en/latest)-based
+* Type checking using [ty](https://github.com/astral-sh/ty)
+* [pytest](https://docs.pytest.org)-powered unit tests with [coverage](https://coverage.readthedocs.io/en/latest)-based
 reporting
 * Sane and simple logging set-up using [Loguru](https://github.com/Delgan/loguru)
 * [./src layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout) to separate application
@@ -39,8 +39,7 @@ logic from tests and other peripherals
 On any pull request, target a `stg` staging environment and:
 
 * run [ruff](https://github.com/astral-sh/ruff)-based linting and formatting,
-[mypy](https://github.com/python/mypy)-based static type checking, and [pytest](https://docs.pytest.org)-based unit
-testing;
+[ty](https://github.com/astral-sh/ty)-based type checking, and [pytest](https://docs.pytest.org)-based unit testing;
 * perform a [CodeQL](https://codeql.github.com) vulnerability scan;
 * build and push a well-labeled container image to a
 [Google Cloud Artifact Registry](https://cloud.google.com/artifact-registry/docs);
@@ -97,8 +96,9 @@ uv run --group lint ruff format ${PATH}               # Format file(s) at `${PAT
 ### Type Checking
 
 ```shell
-uv run --group lint mypy .                            # Run type checking.
-uv run --group lint mypy ${PATH}                      # Format file(s) at `${PATH}`.
+uv run --group lint ty check                          # Run type checking.
+uv run --group lint ty check --watch                  # Continuously re-run type checking on file change.
+uv run --group lint ty check ${PATH}                  # Type check file(s) at `${PATH}`.
 ```
 
 ### Optional [`pre-commit`](https://github.com/pre-commit/pre-commit) Hooks

@@ -1,5 +1,5 @@
 ci:
-  skip: [uv-ruff-lint, uv-ruff-format, uv-mypy]
+  skip: [uv-ruff-lint, uv-ruff-format, uv-ty]
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -55,12 +55,12 @@ repos:
         types_or: [python, pyi, jupyter]
         verbose: true
 
-  # Same reasoning as above, but this time in order to replace the `pre-commit/mirrors-mypy` hook.
+  # Same reasoning as above.
   - repo: local
     hooks:
-      - id: uv-mypy
-        name: uv mypy
-        entry: uv run --group lint mypy
+      - id: uv-ty
+        name: uv ty
+        entry: uv run --group lint ty check
         language: system
         types_or: [python, pyi, jupyter]
         verbose: true

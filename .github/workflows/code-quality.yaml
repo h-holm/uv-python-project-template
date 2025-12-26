@@ -43,4 +43,4 @@ jobs:
 
       - name: Run Type Checking
         run: |-
-          uv run --group lint mypy .
+          uv run --group lint ty check

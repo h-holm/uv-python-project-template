@@ -38,10 +38,9 @@ test = [
   "pytest-cov==7.0.0",
 ]
 lint = [
-  "mypy==1.19.1",
   "pydantic==2.12.5",
   "ruff==0.14.10",
-  "types-tabulate==0.9.0.20241207",
+  "ty==0.0.7",
   { include-group = "test" },
 ]
 pre = [
@@ -68,45 +67,6 @@ skip_empty = true
 branch = true
 relative_files = true
 source = ["src/uv_python_project_template"]
-
-# In the `mypy` config below, `strict = true` is used. This enables many of the optional error-checking flags, but not
-# all. Moreover, the subset of flags that are enabled by `strict = true` can change between `mypy` versions. For
-# these reasons, to ensure strictness and consistent behavior across `mypy` versions, all desired error-checking flags
-# are _explicitly_ set to `true` here below, despite the redundancy this creates.
-[tool.mypy]
-check_untyped_defs = true
-disallow_any_decorated = false
-disallow_any_explicit = false
-disallow_any_expr = false
-disallow_any_generics = true
-disallow_any_unimported = true
-disallow_incomplete_defs = true
-disallow_subclassing_any = true
-disallow_untyped_calls = true
-disallow_untyped_decorators = true
-disallow_untyped_defs = true
-extra_checks = true
-no_implicit_reexport = true
-plugins = ["pydantic.mypy"]
-pretty = true
-show_column_numbers = true
-show_error_code_links = true
-show_error_codes = true
-show_error_context = true
-strict = true
-strict_bytes = true
-strict_equality = true
-warn_no_return = true
-warn_redundant_casts = true
-warn_return_any = true
-warn_unreachable = true
-warn_unused_configs = true
-warn_unused_ignores = true
-
-[tool.pydantic-mypy]
-init_forbid_extra = true
-init_typed = true
-warn_required_dynamic_aliases = true
 
 [tool.pytest.ini_options]
 addopts = "--cov=src/uv_python_project_template --cov-report=term-missing --cov-fail-under=80 --doctest-glob='*.md'"

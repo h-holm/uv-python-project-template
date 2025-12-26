@@ -13,12 +13,12 @@
         "git",
         "gitignore",
         "isort",
-        "mypy",
         "oidc",
         "pydantic",
         "pyproject",
         "pytest",
         "ruff",
+        "ty",
         "typer",
         "uv",
     ],
@@ -33,4 +33,5 @@
         "editor.defaultFormatter": "tamasfe.even-better-toml"
     },
     "evenBetterToml.formatter.arrayAutoCollapse": false,
+    "python.languageServer": "None",
 }
