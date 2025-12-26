@@ -19,17 +19,17 @@ Python application. The placeholder Python logic computes a Fibonacci number.
 * Environment management and dependency resolution via [uv](https://github.com/astral-sh/uv)
 * Primary dependencies and tooling configuration in the [PEP](https://peps.python.org/pep-0621)-recommended
 [pyproject.toml](./pyproject.toml) file
-* (Sub-)dependency locking in the [`uv.lock`](./uv.lock) file
-* Linting and formatting using [ruff](https://github.com/astral-sh/ruff)
+* (Sub-)dependency locking in the [uv.lock](./uv.lock) file
+* [ruff](https://github.com/astral-sh/ruff)-based linting and formatting
 * Static type checking using [mypy](https://github.com/python/mypy)
 * [pytest](https://docs.pytest.org) for unit tests with [coverage](https://coverage.readthedocs.io/en/latest)-based
 reporting
+* Sane and simple logging set-up using [Loguru](https://github.com/Delgan/loguru)
 * [./src layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout) to separate application
-logic from tests and project metadata
-* Sane logging configured in a single [logging.conf](./src/python_project_template/logging.conf) file
+logic from tests and other peripherals
 * Optional quality-of-life add-ons:
-  * [pre-commit](https://github.com/pre-commit/pre-commit) hooks via the `pre` dependency group
-  * automated dependency upgrading vulnerability scans via [Dependabot](https://github.com/dependabot)
+  * automated dependency upgrading and vulnerability scans via [Dependabot](https://github.com/dependabot)
+  * [pre-commit](https://github.com/pre-commit/pre-commit) hooks
   * (further) enforcing of uniform formatting via an [.editorconfig](./.editorconfig)
   * recommended [VS Code](https://code.visualstudio.com) settings and extensions through a [.vscode](./.vscode)
   subdirectory
@@ -115,7 +115,7 @@ uv run --group pre pre-commit                         # Run `pre-commit` hooks.
 
 ```shell
 uv lock --upgrade                                     # Upgrade all upgradeable dependencies.
-uv lock --upgrade-package ${PACKAGE_NAME}             # Upgrade a specific dependency.
+uv lock --upgrade-package ${PACKAGE_NAME}             # Upgrade (only) the `${PACKAGE_NAME}` package.
 ```
 
 After bumping dependencies, remember to commit the updated [uv.lock](uv.lock) file to version control.
@@ -124,7 +124,7 @@ After bumping dependencies, remember to commit the updated [uv.lock](uv.lock) fi
 
 Bump the [SemVer](https://semver.org) version defined in the `project.version` attribute of the
 [pyproject.toml](pyproject.toml) configuration. Then, commit the updated config to version control before creating a
-`git` tag. Before pushing the created tag, ensure the tag has the same name as the (now bumped) version:
+`git` tag. Ensure the tag has the same name as the (now bumped) version:
 
 ```shell
 git tag -a $(uv version --short) -m 'Descriptive tag message'
@@ -152,10 +152,10 @@ In each GCP project, the following is required:
 
 ### Required GitHub Actions Variables
 
-The [GitHub Actions CI/CD set-up](#github-actions-cicd-🛠️) is split up into `stg` and `prd`
+The [GitHub Actions CI/CD set-up](#github-actions-cicd-🛠️) is split into `stg` and `prd`
 [GitHub environments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments),
-each with a defined set of secrets and variables. In many cases, secrets/variables with the same names are set in each
-of the environments. For instance, a `GCP_PROJECT_ID` is present in both the `stg` and the `prd` environment, just with
+each with a defined set of secrets and variables. In many cases, a secret/variable exists with the same name in both
+environments. For instance, a `GCP_PROJECT_ID` is present in both the `stg` and the `prd` environment, just with
 different values. In other cases, secrets/variables are set on the repository level. This is the case with, e.g., the
 `UV_VERSION` variable, as the `uv` version should be the same in staging as in production workloads.
 
@@ -167,8 +167,8 @@ The following secrets and variables must be available to the GitHub Actions work
   * `GCP_LOCATION`: the [location/region](https://cloud.google.com/about/locations) of the (1) Artifact Registry to use
   and (2) Cloud Run job(s) to create;
   * `GCP_WORKLOAD_IDENTITY_PROVIDER`: the full identifier of the
-  [workload identity federation provider](https://docs.cloud.google.com/iam/docs/workload-identity-federation) which
-  the service accounts authenticate through (nota bene: the workload identity provider does _not_ need to exist in the
+  [workload identity federation provider](https://docs.cloud.google.com/iam/docs/workload-identity-federation) through
+  which the service accounts authenticate (nota bene: the workload identity provider does _not_ need to exist in the
   same GCP project as the one targeted in the deployment; in fact, the provider can even exist outside of GCP);
 
 * variables:
@@ -186,7 +186,7 @@ The following secrets and variables must be available to the GitHub Actions work
 
 ### Required Roles
 
-The `GCP_CICD_SERVICE_ACCOUNT_NAME` identity requires the following privileges:
+The `GCP_CICD_SERVICE_ACCOUNT_NAME` service account requires the following privileges:
 
 * [roles/artifactregistry.admin](https://docs.cloud.google.com/iam/docs/roles-permissions/artifactregistry#artifactregistry.admin)
   in order to (1) push images to the Artifact Registry and (2) adjust metadata of existing images;
