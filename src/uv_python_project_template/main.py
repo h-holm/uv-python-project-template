@@ -1,13 +1,13 @@
 """Main entrypoint of a Python application that outputs the n:th number in the Fibonacci sequence."""
 
 import functools
-import logging.config
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
 
 import typer
+from loguru import logger
 
 
 # https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/#running-a-command-line-interface-from-source-with-src-layout
@@ -20,7 +20,6 @@ if not __package__:  # pragma: no cover
 
 from uv_python_project_template.utils.utils import (
     LogLevel,
-    add_file_handler,
     get_ordinal_suffix,
     get_time_elapsed_string,
     pretty_log_dict,
@@ -55,36 +54,28 @@ def main(
     log_file_path: Annotated[Path | None, typer.Option(help="If provided, persist logs in this file.")] = None,
 ) -> None:
     """Log the `nth_number` of the Fibonacci sequence."""
-    LOGGER.setLevel(log_level.upper())
-    if log_file_path:
-        add_file_handler(LOGGER, log_file_path, datefmt=TIMESTAMP_FORMAT)
+    # Remove the default handler from the `loguru` logger and re-instantiate it with the desired log level.
+    logger.remove()
+    logger.add(sys.stderr, level=log_level.upper())
 
-    LOGGER.info("The following arguments and options will be used:")
+    # If a log file path is provided, add a file handler as well.
+    if log_file_path:
+        logger.add(log_file_path, level=log_level.upper(), rotation="500 MB")
+
+    logger.info("The following arguments and options were specified:")
     pretty_log_dict(locals(), header=("argument_name", "argument_value"))
 
     start_timestamp = datetime.now(tz=UTC)
-    LOGGER.info(f"Script started at {start_timestamp.strftime(TIMESTAMP_FORMAT)} ({UTC})")
+    logger.info(f"Script started at {start_timestamp.strftime(TIMESTAMP_FORMAT)} ({UTC}).")
 
-    LOGGER.info(f"The {nth_number}{get_ordinal_suffix(nth_number)} Fibonacci number is: {fibonacci(nth_number)}")
+    logger.info(f"The {nth_number}{get_ordinal_suffix(nth_number)} Fibonacci number is: {fibonacci(nth_number)}.")
 
     end_timestamp = datetime.now(tz=UTC)
     time_elapsed_string = get_time_elapsed_string(end_timestamp - start_timestamp)
-    LOGGER.info(f"Script finished at {end_timestamp.strftime(TIMESTAMP_FORMAT)} ({UTC})")
-    LOGGER.info(f"Time elapsed: {time_elapsed_string}")
+    logger.info(f"Script finished at {end_timestamp.strftime(TIMESTAMP_FORMAT)} ({UTC}).")
+    logger.info(f"Time elapsed: {time_elapsed_string}.")
 
 
 if __name__ == "__main__":
-    # Set up logging.
-    logging.config.fileConfig(
-        Path(__file__).parents[0] / "logging.conf",
-        {"datefmt": TIMESTAMP_FORMAT},
-        disable_existing_loggers=False,
-    )
-    LOGGER = logging.getLogger()
-
     # Run the `typer` app.
     app()
-else:
-    # This block is executed when the module is imported. This is useful for testing purposes, as it allows us to
-    # import the functions and classes defined in this file without running the `typer` app.
-    LOGGER = logging.getLogger(__name__)
