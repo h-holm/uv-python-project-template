@@ -127,7 +127,8 @@ Bump the [SemVer](https://semver.org) version defined in the `project.version` a
 `git` tag. Ensure the tag has the same name as the (now bumped) version:
 
 ```shell
-git tag -a $(uv version --short) -m 'Descriptive tag message'
+git tag -a $(uv version --short) -m 'Descriptive tag message'  # Create a tag.
+git push --atomic origin main $(uv version --short)            # Push the tag.
 ```
 
 ## Infrastructure and CI/CD Set-Up 🏗️
