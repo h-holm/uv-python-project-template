@@ -39,8 +39,8 @@ test = [
 ]
 lint = [
   "pydantic==2.12.5",
-  "ruff==0.14.11",
-  "ty==0.0.11",
+  "ruff==0.14.13",
+  "ty==0.0.12",
   { include-group = "test" },
 ]
 pre = [
