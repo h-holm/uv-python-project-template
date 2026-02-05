@@ -9,7 +9,7 @@ from loguru import logger
 from tabulate import tabulate
 
 
-class LogLevel(str, enum.Enum):
+class LogLevel(enum.StrEnum):
     """Log level."""
 
     CRITICAL = "critical"
