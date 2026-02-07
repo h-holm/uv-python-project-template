@@ -8,7 +8,7 @@ Add one of the following to the title, then remove this paragraph:
 
 ## Description
 
-Lorem ipsum.
+See title.
 
 ## Checklist Before Requesting a Review
 
