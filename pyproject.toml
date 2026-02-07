@@ -44,7 +44,7 @@ lint = [
   { include-group = "test" },
 ]
 pre = [
-  "pre-commit==4.5.1",
+  "prek==0.3.2",
   { include-group = "lint" },
 ]
 

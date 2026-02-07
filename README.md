@@ -6,7 +6,7 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)
 [![Pytest](https://img.shields.io/static/v1?label=‎&message=Pytest&logo=Pytest&color=b647c4&logoColor=white)](https://docs.pytest.org)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![prek](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json)](https://github.com/j178/prek)
 [![Deploy to Cloud Run](https://github.com/h-holm/uv-python-project-template/workflows/Deploy%20to%20Cloud%20Run/badge.svg)](https://github.com/h-holm/uv-python-project-template/actions/workflows/deploy-to-cloud-run.yaml)
 [![CodeQL](https://github.com/h-holm/uv-python-project-template/workflows/CodeQL%20Analysis/badge.svg)](https://github.com/h-holm/uv-python-project-template/actions/workflows/codeql-analysis.yaml)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/h-holm/uv-python-project-template/main.svg)](https://results.pre-commit.ci/latest/github/h-holm/uv-python-project-template/main)
@@ -29,7 +29,7 @@ reporting
 logic from tests and other peripherals
 * Optional quality-of-life add-ons:
   * automated dependency upgrading and vulnerability scans via [Dependabot](https://github.com/dependabot)
-  * [pre-commit](https://github.com/pre-commit/pre-commit) hooks
+  * [prek](https://github.com/j178/prek)-based pre-commit hooks
   * (further) enforcing of uniform formatting via an [.editorconfig](./.editorconfig)
   * recommended [VS Code](https://code.visualstudio.com) settings and extensions through a [.vscode](./.vscode)
   subdirectory
@@ -101,14 +101,14 @@ uv run --group lint ty check --watch                  # Continuously re-run type
 uv run --group lint ty check ${PATH}                  # Type check file(s) at `${PATH}`.
 ```
 
-### Optional [`pre-commit`](https://github.com/pre-commit/pre-commit) Hooks
+### Optional [`prek`](https://github.com/j178/prek)-based pre-commit Hooks
 
-The optional `pre-commit` hooks ensure that the linting, formatting and type checking steps described above all pass
-before a commit is created. The hooks can be set up and used as follows:
+The optional `prek` hooks ensure that the linting, formatting and type checking steps described above all pass before a
+commit is created. The hooks can be set up and used as follows:
 
 ```shell
-uv run --group pre pre-commit install                 # Set up `pre-commit` hooks.
-uv run --group pre pre-commit                         # Run `pre-commit` hooks.
+uv run --group pre prek install                       # Set up `prek` hooks.
+uv run --group pre prek                               # Run `prek` hooks.
 ```
 
 ### Upgrading Dependencies
