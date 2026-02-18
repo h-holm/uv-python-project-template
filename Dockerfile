@@ -2,7 +2,7 @@
 # Inspired by: https://github.com/astral-sh/uv-docker-example/blob/main/Dockerfile
 
 # Use an image with `uv` pre-installed.
-FROM ghcr.io/astral-sh/uv:0.9-python3.14-alpine
+FROM ghcr.io/astral-sh/uv:0.10-python3.14-alpine
 
 # Setup a non-root user.
 RUN addgroup -S -g 1000 nonroot \
