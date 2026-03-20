@@ -21,9 +21,17 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types:
+          - 'patch'
+          - 'minor'
+      major:
+        update-types:
+          - 'major'
     labels:
       - 'dependencies'
-      - 'github-actions'
+      - 'ci'
 
   # Maintain Python dependencies.
   - package-ecosystem: uv

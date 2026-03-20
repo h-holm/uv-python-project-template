@@ -1,0 +1,46 @@
+name: Update Repository Labels
+
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - '.github/workflows/labels.yaml'
+
+jobs:
+  create-labels:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    env:
+      LABELS_JSON: |
+        [
+          {"name": "python", "color": "2b67c6", "description": "Anything related to Python code"},
+          {"name": "dependencies", "color": "0366d6", "description": "Anything related to dependencies"},
+          {"name": "ci", "color": "bfdadc", "description": "Anything related to the CI/CD set-up"},
+          {"name": "docker", "color": "5023bd", "description": "Anything related to container images"}
+        ]
+    steps:
+    - uses: actions/github-script@v8
+      with:
+        script: |
+          const labels = JSON.parse(process.env.LABELS_JSON);
+          for (const label of labels) {
+            try {
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: label.name,
+                description: label.description || '',
+                color: label.color
+              });
+            } catch (error) {
+              // Check if the error is because the label already exists
+              if (error.status === 422) {
+                console.log(`Label '${label.name}' already exists. Skipping.`);
+              } else {
+                // Log other errors
+                console.error(`Error creating label '${label.name}': ${error}`);
+              }
+            }
+          }
