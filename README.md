@@ -122,14 +122,18 @@ After bumping dependencies, remember to commit the updated [uv.lock](uv.lock) fi
 
 ### Bumping the Version
 
-Bump the [SemVer](https://semver.org) version defined in the `project.version` attribute of the
-[pyproject.toml](pyproject.toml) configuration. Then, commit the updated config to version control before creating a
-`git` tag. Ensure the tag has the same name as the (now bumped) version:
+Manually bump the [SemVer](https://semver.org) version defined in the `project.version` attribute of the
+[pyproject.toml](pyproject.toml) configuration. Then, commit the updated [pyproject.toml](pyproject.toml) to version
+control before creating a `git` tag. Ensure the tag has the same name as the (now bumped) version:
 
 ```shell
 git tag -a $(uv version --short) -m 'Descriptive tag message'  # Create a tag.
 git push --atomic origin main $(uv version --short)            # Push the tag.
 ```
+
+Tags must be bare semver strings (e.g. `0.3.1`, not `v0.3.1`). The `$(uv version --short)` command produces the
+correct format directly. The CI/CD pipeline validates that the tag matches the `project.version` in `pyproject.toml`
+and will fail the deployment if they differ.
 
 ## Infrastructure and CI/CD Set-Up 🏗️
 
