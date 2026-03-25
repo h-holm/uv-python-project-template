@@ -17,14 +17,13 @@ Python application. The placeholder Python logic computes a Fibonacci number.
 ## Features ✅
 
 * Environment management and dependency resolution via [uv](https://github.com/astral-sh/uv)
-* Primary dependencies and tooling configuration in the [PEP](https://peps.python.org/pep-0621)-recommended
-[pyproject.toml](./pyproject.toml) file
-* (Sub-)dependency locking in the [uv.lock](./uv.lock) file
+* [pyproject.toml](./pyproject.toml) for dependencies and tooling configuration
+* Dependency locking via [uv.lock](./uv.lock)
 * [ruff](https://github.com/astral-sh/ruff)-based linting and formatting
 * Type checking using [ty](https://github.com/astral-sh/ty)
 * [pytest](https://docs.pytest.org)-powered unit tests with [coverage](https://coverage.readthedocs.io/en/latest)-based
 reporting
-* Sane and simple logging set-up using [Loguru](https://github.com/Delgan/loguru)
+* Structured logging via [Loguru](https://github.com/Delgan/loguru)
 * [./src layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout) to separate application
 logic from tests and other peripherals
 * Optional quality-of-life add-ons:
@@ -34,7 +33,7 @@ logic from tests and other peripherals
   * recommended [VS Code](https://code.visualstudio.com) settings and extensions through a [.vscode](./.vscode)
   subdirectory
 
-### [GitHub Actions](./.github/workflows/) [CI/CD](https://www.redhat.com/en/topics/devops/what-is-ci-cd) 🛠️
+### [GitHub Actions](./.github/workflows/) CI/CD 🛠️
 
 On any pull request, target a `stg` staging environment and:
 
@@ -70,10 +69,8 @@ uv run src/uv_python_project_template/main.py 123     # Compute the 123rd Fibona
 
 ```shell
 uv run --group test pytest                            # Run all `./tests` unit tests and compute a coverage report.
-uv run --group test pytest --verbose                  # Same as above, but provide additional information.
 uv run --group test pytest tests/test_utils.py        # Execute (only) the `tests/test_utils.py` unit tests.
 uv run --group test pytest --cov-report=xml           # Execute unit tests and write coverage report to `coverage.xml`.
-uv run --group test pytest --pdb                      # Execute unit tests in debug mode.
 ```
 
 ### Linting
@@ -103,8 +100,7 @@ uv run --group lint ty check ${PATH}                  # Type check file(s) at `$
 
 ### Optional [`prek`](https://github.com/j178/prek)-based pre-commit Hooks
 
-The optional `prek` hooks ensure that the linting, formatting and type checking steps described above all pass before a
-commit is created. The hooks can be set up and used as follows:
+Pre-commit hooks that enforce linting, formatting, and type checking before each commit:
 
 ```shell
 uv run --group pre prek install                       # Set up `prek` hooks.
@@ -116,15 +112,13 @@ uv run --group pre prek                               # Run `prek` hooks.
 ```shell
 uv lock --upgrade                                     # Upgrade all upgradeable dependencies.
 uv lock --upgrade-package ${PACKAGE_NAME}             # Upgrade (only) the `${PACKAGE_NAME}` package.
+# Remember to commit the updated uv.lock file.
 ```
-
-After bumping dependencies, remember to commit the updated [uv.lock](uv.lock) file to version control.
 
 ### Bumping the Version
 
-Manually bump the [SemVer](https://semver.org) version defined in the `project.version` attribute of the
-[pyproject.toml](pyproject.toml) configuration. Then, commit the updated [pyproject.toml](pyproject.toml) to version
-control before creating a `git` tag. Ensure the tag has the same name as the (now bumped) version:
+Bump the [SemVer](https://semver.org) version in `project.version` in the [pyproject.toml](pyproject.toml), commit the
+change, then create and push a tag:
 
 ```shell
 git tag -a $(uv version --short) -m 'Descriptive tag message'  # Create a tag.
@@ -157,12 +151,10 @@ In each GCP project, the following is required:
 
 ### Required GitHub Actions Variables
 
-The [GitHub Actions CI/CD set-up](#github-actions-cicd-🛠️) is split into `stg` and `prd`
+The CI/CD set-up uses `stg` and `prd`
 [GitHub environments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments),
-each with a defined set of secrets and variables. In many cases, a secret/variable exists with the same name in both
-environments. For instance, a `GCP_PROJECT_ID` is present in both the `stg` and the `prd` environment, just with
-different values. In other cases, secrets/variables are set on the repository level. This is the case with, e.g., the
-`UV_VERSION` variable, as the `uv` version should be the same in staging as in production workloads.
+each with their own secrets and variables. The `UV_VERSION` variable is set at the repository level, as it is shared
+across both environments.
 
 The following secrets and variables must be available to the GitHub Actions workflows:
 
@@ -173,8 +165,8 @@ The following secrets and variables must be available to the GitHub Actions work
   and (2) Cloud Run job(s) to create;
   * `GCP_WORKLOAD_IDENTITY_PROVIDER`: the full identifier of the
   [workload identity federation provider](https://docs.cloud.google.com/iam/docs/workload-identity-federation) through
-  which the service accounts authenticate (nota bene: the workload identity provider does _not_ need to exist in the
-  same GCP project as the one targeted in the deployment; in fact, the provider can even exist outside of GCP);
+  which the service accounts authenticate (the provider does not need to exist in the same GCP project as the
+  deployment target);
 
 * variables:
   * `UV_VERSION`: the [`uv`](https://github.com/astral-sh/uv) version to use in the
@@ -185,26 +177,25 @@ The following secrets and variables must be available to the GitHub Actions work
     * [integration-test](./.github/workflows/integration-test.yaml) and
       [deploy-to-cloud-run](./.github/workflows/deploy-to-cloud-run.yaml) CI/CD workflows that execute Cloud Run jobs;
   * `GCP_RUNTIME_SERVICE_ACCOUNT_NAME`: the name of the GCP service account that the integration test and deployed
-  Cloud Run job should assume the identity of (nota bene: to adhere to
-  [least privileges best practices](https://en.wikipedia.org/wiki/Principle_of_least_privilege), this identity should
-  be different from the `GCP_CICD_SERVICE_ACCOUNT_NAME`).
+  Cloud Run job should assume the identity of. To follow
+  [least-privilege principles](https://en.wikipedia.org/wiki/Principle_of_least_privilege), this should be a separate
+  account from `GCP_CICD_SERVICE_ACCOUNT_NAME`.
 
 ### Required Roles
 
-The `GCP_CICD_SERVICE_ACCOUNT_NAME` service account requires the following privileges:
+The `GCP_CICD_SERVICE_ACCOUNT_NAME` service account requires:
 
 * [roles/artifactregistry.admin](https://docs.cloud.google.com/iam/docs/roles-permissions/artifactregistry#artifactregistry.admin)
-  in order to (1) push images to the Artifact Registry and (2) adjust metadata of existing images;
-* [roles/run.developer](https://docs.cloud.google.com/run/docs/reference/iam/roles#run.developer) in order to deploy
-  Cloud Run jobs;
+  to push images to and update metadata in the Artifact Registry;
+* [roles/run.developer](https://docs.cloud.google.com/run/docs/reference/iam/roles#run.developer) to deploy Cloud Run
+  jobs;
 * [roles/iam.serviceAccountUser](https://docs.cloud.google.com/iam/docs/service-account-permissions#user-role) on the
-  `GCP_RUNTIME_SERVICE_ACCOUNT_NAME` in order to deploy jobs that assume the identity of the latter.
+  `GCP_RUNTIME_SERVICE_ACCOUNT_NAME` to deploy jobs that run as that identity.
 
-The workload identity provider requires the following privilege:
+The workload identity provider requires:
 
 * [roles/iam.workloadIdentityUser](https://docs.cloud.google.com/iam/docs/service-account-permissions#workload-identity-user)
-  on the `GCP_CICD_SERVICE_ACCOUNT_NAME` in order for the provider to be able to create access tokens on behalf of the
-  service account.
+  on the `GCP_CICD_SERVICE_ACCOUNT_NAME` to generate access tokens on its behalf.
 
 ## License 🤝
 
