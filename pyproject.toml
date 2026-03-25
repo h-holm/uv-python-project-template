@@ -34,7 +34,6 @@ Source = "https://github.com/h-holm/uv-python-project-template"
 [dependency-groups]
 test = [
   "pytest==9.0.2",
-  "pytest-asyncio==1.3.0",
   "pytest-cov==7.0.0",
 ]
 lint = [
@@ -70,8 +69,6 @@ source = ["src/uv_python_project_template"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=src/uv_python_project_template --cov-report=term-missing --cov-fail-under=80 --doctest-glob='*.md'"
-asyncio_default_fixture_loop_scope = "function"
-asyncio_mode = "strict"
 minversion = "9.0.2"
 pythonpath = ["src"]
 testpaths = ["tests"]
