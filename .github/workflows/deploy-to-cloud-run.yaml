@@ -132,7 +132,7 @@ jobs:
     if: needs.paths-filter.outputs.application-relevant-files-changed == 'true' || startsWith(github.ref, 'refs/tags/')
     secrets: inherit
     permissions:
-      contents: read
+      contents: write
       id-token: write
     with:
       GITHUB_ENVIRONMENT: |-
