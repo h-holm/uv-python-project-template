@@ -60,7 +60,8 @@ jobs:
     uses: ./.github/workflows/integration-test.yaml
     needs: [paths-filter, validate-tag]
     if: >-
-      (needs.validate-tag.result == 'success' || needs.validate-tag.result == 'skipped')
+      !cancelled()
+      && (needs.validate-tag.result == 'success' || needs.validate-tag.result == 'skipped')
       && (needs.paths-filter.outputs.application-relevant-files-changed == 'true' || startsWith(github.ref, 'refs/tags/'))
     secrets: inherit
     permissions:
