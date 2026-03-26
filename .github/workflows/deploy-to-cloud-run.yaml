@@ -14,6 +14,21 @@ defaults:
     shell: bash
 
 jobs:
+  validate-tag:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v6
+    - name: Validate Tag Matches Package Version
+      run: |
+        PACKAGE_VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
+        GIT_TAG="${GITHUB_REF#refs/tags/}"
+        if [ "$GIT_TAG" != "$PACKAGE_VERSION" ]; then
+          echo "Tag '$GIT_TAG' does not match package version '$PACKAGE_VERSION'."
+          exit 1
+        fi
+
   # Check which file(s) were changed, in order to decide which jobs to run.
   paths-filter:
     runs-on: ubuntu-latest
@@ -43,7 +58,7 @@ jobs:
   integration-test:
     name: Integration Test
     uses: ./.github/workflows/integration-test.yaml
-    needs: [paths-filter]
+    needs: [paths-filter, validate-tag]
     if: needs.paths-filter.outputs.application-relevant-files-changed == 'true' || startsWith(github.ref, 'refs/tags/')
     secrets: inherit
     permissions:
@@ -122,7 +137,7 @@ jobs:
     if: needs.paths-filter.outputs.application-relevant-files-changed == 'true' || startsWith(github.ref, 'refs/tags/')
     secrets: inherit
     permissions:
-      contents: read
+      contents: write
       id-token: write
     with:
       GITHUB_ENVIRONMENT: |-

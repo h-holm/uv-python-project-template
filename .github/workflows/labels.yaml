@@ -34,13 +34,19 @@ jobs:
                 description: label.description || '',
                 color: label.color
               });
+              console.log(`Created label '${label.name}'.`);
             } catch (error) {
-              // Check if the error is because the label already exists
               if (error.status === 422) {
-                console.log(`Label '${label.name}' already exists. Skipping.`);
+                await github.rest.issues.updateLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label.name,
+                  description: label.description || '',
+                  color: label.color
+                });
+                console.log(`Updated label '${label.name}'.`);
               } else {
-                // Log other errors
-                console.error(`Error creating label '${label.name}': ${error}`);
+                core.setFailed(`Error managing label '${label.name}': ${error}`);
               }
             }
           }
