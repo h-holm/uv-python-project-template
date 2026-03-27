@@ -3,7 +3,6 @@ Add one of the following to the title, then remove this paragraph:
 - [Fix]
 - [Feature]
 - [Refactor]
-- [Release]
 - [Hotfix]
 
 ## Description
