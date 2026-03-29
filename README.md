@@ -117,8 +117,12 @@ uv lock --upgrade-package ${PACKAGE_NAME}             # Upgrade (only) the `${PA
 
 ### Bumping the Version
 
-Bump the [SemVer](https://semver.org) version in `project.version` in the [pyproject.toml](pyproject.toml), commit the
-change, then create and push a tag:
+1. Bump the [SemVer](https://semver.org) version in the `project.version` attribute of the
+[pyproject.toml](pyproject.toml),
+2. run `uv lock` to ensure the `uv.lock` file is updated with the new version,
+3. commit the changes,
+4. create a `git` tag, and
+5. push the tag.
 
 ```shell
 git tag -a $(uv version --short) -m 'Descriptive tag message'  # Create a tag.
