@@ -25,6 +25,7 @@ jobs:
         id: uv-version
         run: |
           version=$(sed -n 's|.*ghcr.io/astral-sh/uv:\([0-9]*\.[0-9]*\).*|\1|p' Dockerfile)
+          [[ -n "$version" ]] || { echo "::error::Failed to extract uv version from Dockerfile"; exit 1; }
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Install `uv` ${{ steps.uv-version.outputs.version }}
