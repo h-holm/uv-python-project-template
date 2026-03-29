@@ -37,7 +37,6 @@ test = [
   "pytest-cov==7.1.0",
 ]
 lint = [
-  "pydantic==2.12.5",
   "ruff==0.15.8",
   "ty==0.0.26",
   { include-group = "test" },

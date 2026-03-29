@@ -31,29 +31,7 @@ jobs:
 
   # Check which file(s) were changed, in order to decide which jobs to run.
   paths-filter:
-    runs-on: ubuntu-latest
-    outputs:
-      application-relevant-files-changed: ${{ steps.filter.outputs.application-relevant-files }}
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v6
-      with:
-        fetch-depth: 0
-    - name: Filter Paths
-      id: filter
-      uses: dorny/paths-filter@v4.0.1  # Pinned to a specific version to avoid breaking changes.
-      with:
-        # Detect changes to `./src` code file, unit tests, dependencies, the (building of the) container image, the
-        # GitHub Actions workflows.
-        filters: |
-          application-relevant-files:
-            - 'src/**'
-            - 'tests/**/*.py'
-            - 'pyproject.toml'
-            - 'uv.lock'
-            - 'Dockerfile'
-            - '.dockerignore'
-            - '.github/workflows/**'
+    uses: ./.github/workflows/paths-filter.yaml
 
   integration-test:
     name: Integration Test

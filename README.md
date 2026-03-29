@@ -153,8 +153,7 @@ In each GCP project, the following is required:
 
 The CI/CD set-up uses `stg` and `prd`
 [GitHub environments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments),
-each with their own secrets and variables. The `UV_VERSION` variable is set at the repository level, as it is shared
-across both environments.
+each with their own secrets and variables.
 
 The following secrets and variables must be available to the GitHub Actions workflows:
 
@@ -169,8 +168,6 @@ The following secrets and variables must be available to the GitHub Actions work
   deployment target);
 
 * variables:
-  * `UV_VERSION`: the [`uv`](https://github.com/astral-sh/uv) version to use in the
-  [code quality checks](./.github/workflows/code-quality.yaml);
   * `GCP_CICD_SERVICE_ACCOUNT_NAME`: the name of the GCP service account to assume the identity of in the:
     * [build-and-push-image](./.github/workflows/build-and-push-image.yaml) CI/CD workflow that registers a
       container image in the Artifact Registry,

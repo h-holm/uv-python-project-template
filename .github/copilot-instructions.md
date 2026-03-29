@@ -1,45 +1,43 @@
 # Project Overview
 
-This project is a Python-based repository template designed to provide a standardized structure and set of conventions
-for Python projects. It includes a basic yet straightforward project structure complete with unit tests and a rigorous
-integration test that runs the end-to-end application logic on Google Cloud Run using a container image built from the
-source code. The CI/CD is set up using GitHub Actions. As described in the `README.md` file at the root of the
-repository, the project follows strict code formatting and unit testing guidelines. The goal of the repository is
-adherence to best practices, while maintaining simplicity and ease of use for developers. The repository is designed
-to be easily adaptable to a wide range of Python projects.
+This is a template repository designed to provide a standardized structure for Python projects.
 
-## Folder Structure
+The application logic (defined under `src/uv_python_project_template`) is intentionally trivial, as it serves only as a
+placeholder. Although simple, it provides important fundamentals such as a sane logging set-up, a separation of
+utilities from core logic, and a clear entry point.
 
-* `/src`: The source code / actual application logic.
-* `/tests`: Python-based unit tests of the codebase.
-* `/.github`: Configuration files for GitHub Actions workflows, Dependabot, CodeQL, and pull requests (PRs), as well as
-instructions for coding assistants.
-* `/.vscode`: Configuration files for Visual Studio Code, including settings and recommended extensions.
+The application logic is covered by rigorous unit tests, as well as an integration test that runs the end-to-end
+application logic using a container image built from the source code.
+
+See the `README.md` for full details on development workflows. Refer to the `pyproject.toml` for tooling configuration.
+
+## Structure
+
+* `/src`: Application source code.
+* `/tests`: Unit tests.
+* `/.github`: GitHub Actions workflows, Dependabot, CodeQL, GitHub labels, and a pull request (PR) template.
+* `/.vscode`: Visual Studio Code settings and recommended extensions.
 
 ## Libraries and Frameworks
 
 * `uv` for building and running the application, as well as for managing dependencies and virtual environments.
-* `pytest` for unit testing.
 * `ruff` for linting and code formatting.
+* `pytest` for unit testing.
 * `ty` for static type checking.
 * `prek` for pre-commit hooks to ensure code quality and consistency before commits are made.
-* `docker` for building and running container images.
-* Google Cloud Run for deploying and running the application on Google Cloud Run.
+* `docker` for building the container image that bundles the application logic and its dependencies.
+* Google Cloud Run for deploying and running the application in a serverless environment.
 * GitHub Actions for CI/CD.
 
-## Coding Conventions
+## Conventions
 
-* Code should be formatted and linted using `ruff`.
-* Code should adhere to the `ty` type checking rules.
-* Commits should be made in small, focused increments that address a single issue or feature.
-* Commit messages should be concise and descriptive.
-* PRs should be brief. Aim to minimize the size of the diff.
-
-The `README.md` and `pyproject.toml` files at the root of the repo describe how to ensure adherence to the code
-formatting, linting, and type checking conventions.
-
-## Testing
-
-Unit tests should be straightforward, simple and brief. Tests should be added for any new code, and for any changes
-to existing code. Tests should be added in the same PR as the code they are testing. Unit tests can be executed locally
-using `pytest` as described in the `README.md` file at the root of the repository.
+* Format, lint, and type-check all code with `ruff` and `ty`. Refer to the "Development" section of the `README.md` for
+details on how to run these tools.
+* Keep commits small and focused on a single issue or feature.
+* Keep PRs brief. Minimize diff size.
+* Include unit tests for all new or changed code in the same PR as the code changes.
+* Unit tests should be simple, straightforward, and brief.
+* CI/CD should be set up in such a way that it only runs tests and checks that are relevant to the code changes in the
+PR.
+* Avoid shortening variable names, e.g., use `version` instead of `ver`, unless the abbreviation is widely recognized
+and unambiguous.

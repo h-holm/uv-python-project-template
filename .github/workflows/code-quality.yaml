@@ -21,10 +21,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install `uv` ${{ vars.UV_VERSION }}
+      - name: Extract `uv` Version from Dockerfile
+        id: uv-version
+        run: |
+          version=$(sed -n 's|.*ghcr.io/astral-sh/uv:\([0-9]*\.[0-9]*\).*|\1|p' Dockerfile)
+          [[ -n "$version" ]] || { echo "::error::Failed to extract uv version from Dockerfile"; exit 1; }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Install `uv` ${{ steps.uv-version.outputs.version }}
         uses: astral-sh/setup-uv@v7
         with:
-          version: ${{ vars.UV_VERSION }}
+          version: ${{ steps.uv-version.outputs.version }}
 
       - name: Print `uv` Version
         run: uv --version
