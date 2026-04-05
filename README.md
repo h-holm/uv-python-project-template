@@ -117,21 +117,20 @@ uv lock --upgrade-package ${PACKAGE_NAME}             # Upgrade (only) the `${PA
 
 ### Bumping the Version
 
-1. Bump the [SemVer](https://semver.org) version in the `project.version` attribute of the
-[pyproject.toml](pyproject.toml),
-2. run `uv lock` to ensure the `uv.lock` file is updated with the new version,
-3. commit the changes,
-4. create a `git` tag, and
-5. push the tag.
-
 ```shell
-git tag -a $(uv version --short) -m 'Descriptive tag message'  # Create a tag.
-git push --atomic origin main $(uv version --short)            # Push the tag.
+./scripts/bump-version.sh patch                                # Bump the patch version (e.g. 0.4.1 -> 0.4.2).
+./scripts/bump-version.sh minor                                # Bump the minor version (e.g. 0.4.1 -> 0.5.0).
+./scripts/bump-version.sh major                                # Bump the major version (e.g. 0.4.1 -> 1.0.0).
 ```
 
-Tags must be bare semver strings (e.g. `0.3.1`, not `v0.3.1`). The `$(uv version --short)` command produces the
-correct format directly. The CI/CD pipeline validates that the tag matches the `project.version` in `pyproject.toml`
-and will fail the deployment if they differ.
+The script updates `pyproject.toml`, syncs `uv.lock`, commits, and creates a git tag. After running it, push with:
+
+```shell
+git push --atomic origin main $(uv version --short)            # Push the commit and tag together.
+```
+
+Tags must be bare semver strings (e.g. `0.3.1`, not `v0.3.1`). The CI/CD pipeline validates that the tag matches the
+`project.version` in `pyproject.toml` and will fail the deployment if they differ.
 
 ## Infrastructure and CI/CD Set-Up 🏗️
 
