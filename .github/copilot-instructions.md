@@ -15,6 +15,8 @@ See the `README.md` for full details on development workflows. Refer to the `pyp
 
 * `/src`: Application source code.
 * `/tests`: Unit tests.
+* `/docs`: Documentation describing the infrastructure set-up.
+* `/scripts`: Utility Bash scripts not directly related to the application logic.
 * `/.github`: GitHub Actions workflows, Dependabot, CodeQL, GitHub labels, and a pull request (PR) template.
 * `/.vscode`: Visual Studio Code settings and recommended extensions.
 
