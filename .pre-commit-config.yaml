@@ -1,5 +1,5 @@
 ci:
-  skip: [uv-ruff-lint, uv-ruff-format, uv-ty]
+  skip: [uv-ty]
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -18,6 +18,35 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
         args: ['--fix=auto'] # Replace "auto" with "lf" to enforce Linux/Mac line endings or "crlf" for Windows
+        priority: 0
+
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.25
+    hooks:
+      - id: validate-pyproject
+        priority: 0
+
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 1.0.0
+    hooks:
+      - id: mdformat
+        language: python # Ensures dependency update tools such as Renovate updates the `additional_dependencies`.
+        additional_dependencies:
+          - mdformat-mkdocs==5.1.4
+          - mdformat-footnote==0.1.3
+        priority: 0
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.48.0
+    hooks:
+      - id: markdownlint-fix
+        priority: 1
+
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.11.0.1
+    hooks:
+      - id: shellcheck
+        priority: 0
 
   # The built-in `check-json` hook does not support JSON5 files (~= JSON with comments and trailing commas). To lint
   # JSON5 files, use the `check-json5` hook instead.
@@ -25,37 +54,49 @@ repos:
     rev: v1.0.1
     hooks:
       - id: check-json5
+        priority: 0
+
+  # The `actionlint` hook verifies correct syntax in GitHub Actions workflows.
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint
+        language: golang # Ensures dependency update tools such as Renovate updates the `additional_dependencies`.
+        additional_dependencies:
+          # `actionlint` offers a feature which extracts shell scripts in GitHub Actions `run:` steps and checks them
+          # with `shellcheck`. This is arguably the most useful feature of `actionlint`, but the feature only works if
+          # `shellcheck` is installed.
+          - 'github.com/wasilibs/go-shellcheck/cmd/shellcheck@v0.11.1'
+        priority: 0
 
   # Ensure the `uv.lock` file is in sync with the `pyproject.toml` config.
   - repo: https://github.com/astral-sh/uv-pre-commit
-    # uv version.
-    rev: 0.11.2
+    rev: 0.11.4
     hooks:
       - id: uv-lock
+        priority: 0
 
-  # Instead of using the `astral-sh/ruff-pre-commit` hook, use `uv` and the "lint" dependency group defined in the
-  # `pyproject.toml`. This ensures that settings and versions between the `pre-commit` hooks and the `pyproject.toml`
+  # Ensure that `ruff` and `ty` versions here in the `prek` hooks align with the `uv.lock` file.
+  - repo: https://github.com/tsvikas/sync-with-uv
+    rev: v0.5.0
+    hooks:
+      - id: sync-with-uv
+        priority: 1
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.9
+    hooks:
+      - id: ruff-check
+        types_or: [python, pyi, jupyter]
+        args: [--fix]
+        priority: 1
+      - id: ruff-format
+        types_or: [python, pyi, jupyter]
+        priority: 1
+
+  # No official `ty` hook exists. Until one is created, use `uv` and the "lint" dependency group and run `ty` in
+  #'local' mode. This also ensures that settings and versions between the `pre-commit` hooks and the `pyproject.toml`
   # are aligned.
-  - repo: local
-    hooks:
-      - id: uv-ruff-lint
-        name: uv ruff lint
-        entry: uv run --group lint ruff check
-        language: system
-        types_or: [python, pyi, jupyter]
-        verbose: true
-
-  # Same reasoning as above.
-  - repo: local
-    hooks:
-      - id: uv-ruff-format
-        name: uv ruff format
-        entry: uv run --group lint ruff format --check
-        language: system
-        types_or: [python, pyi, jupyter]
-        verbose: true
-
-  # Same reasoning as above.
   - repo: local
     hooks:
       - id: uv-ty
@@ -64,3 +105,4 @@ repos:
         language: system
         types_or: [python, pyi, jupyter]
         verbose: true
+        priority: 1
