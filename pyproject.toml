@@ -17,6 +17,7 @@ dependencies = [
   "typer==0.24.1",
 ]
 description = "Python template project using the `uv` project manager."
+keywords = ["python", "template", "uv", "ruff", "ty"]
 license = { file = "LICENSE" }
 name = "uv-python-project-template"
 readme = "README.md"
