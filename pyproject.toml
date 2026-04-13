@@ -33,12 +33,12 @@ Source = "https://github.com/h-holm/uv-python-project-template"
 
 [dependency-groups]
 test = [
-  "pytest==9.0.2",
+  "pytest==9.0.3",
   "pytest-cov==7.1.0",
 ]
 lint = [
-  "ruff==0.15.8",
-  "ty==0.0.26",
+  "ruff==0.15.10",
+  "ty==0.0.29",
   { include-group = "test" },
 ]
 pre = [
