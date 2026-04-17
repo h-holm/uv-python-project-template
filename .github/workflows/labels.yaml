@@ -21,7 +21,7 @@ jobs:
           {"name": "docker", "color": "5023bd", "description": "Anything related to container images"}
         ]
     steps:
-    - uses: actions/github-script@v8
+    - uses: actions/github-script@v9
       with:
         script: |
           const labels = JSON.parse(process.env.LABELS_JSON);
