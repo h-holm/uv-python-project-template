@@ -31,7 +31,9 @@ Python logic computes a Fibonacci number.
   - (further) enforcing of uniform formatting via an
     [.editorconfig](./.editorconfig)
   - recommended [VS Code][vscode] settings under [.vscode](./.vscode)
-  - [LLM][llm] agent instructions in [AGENTS.md](./AGENTS.md)
+  - default [LLM][llm] coding agent instructions in [AGENTS.md](./AGENTS.md)
+    with model-specific extended instructions in [CLAUDE.md](.claude/CLAUDE.md)
+    and [.github/copilot-instructions.md](.github/copilot-instructions.md)
 
 ### [GitHub Actions][github-actions] CI/CD 🛠️
 

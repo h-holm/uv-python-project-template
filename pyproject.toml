@@ -67,8 +67,10 @@ branch = true
 relative_files = true
 source = ["src/uv_python_project_template"]
 
-[tool.markdownlint-cli2.config]
-MD013.code_block_line_length = 120
+[tool.markdownlint-cli2]
+# Claude instructions can reference other files. Such imports trigger `markdownlint` complaints.
+ignores = ["**/*CLAUDE.md"]
+config.MD013.code_block_line_length = 120
 
 [tool.pytest.ini_options]
 addopts = "--cov=src/uv_python_project_template --cov-report=term-missing --cov-fail-under=80 --doctest-glob='*.md'"
