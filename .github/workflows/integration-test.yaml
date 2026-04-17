@@ -82,8 +82,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
       # Authenticate to Google Cloud via Workload Identity Federation (WIF).
       - name: Authenticate to Google Cloud
@@ -104,6 +102,6 @@ jobs:
             --task-timeout 5m \
             --parallelism 1 \
             --region "${{ secrets.GCP_LOCATION }}" \
-            --args="--log-level,debug,200" \
+            --args="--log-level,debug,123" \
             --execute-now \
             --wait

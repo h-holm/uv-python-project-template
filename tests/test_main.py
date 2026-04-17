@@ -26,37 +26,19 @@ def test_fibonacci(n: int, nth_number: int) -> None:
     assert fibonacci(n) == nth_number
 
 
-def test_main() -> None:
-    # The script should succeed as long as a non-negative integer is provided.
-    result = runner.invoke(app, ["1"])
+@pytest.mark.parametrize("args", [["1"], ["100"], ["--log-level", "debug", "1"]])
+def test_main_success(args: list[str]) -> None:
+    result = runner.invoke(app, args)
     assert result.exit_code == 0
 
-    result = runner.invoke(app, ["100"])
-    assert result.exit_code == 0
 
-    # The script should fail if anything other than a non-negative integer is provided.
-    result = runner.invoke(app, ["asd"])
+@pytest.mark.parametrize("args", [["asd"], ["-1"], [""], [], ["--log-level", "invalid", "1"]])
+def test_main_failure(args: list[str]) -> None:
+    result = runner.invoke(app, args)
     assert result.exit_code == 2
 
-    result = runner.invoke(app, ["-1"])
-    assert result.exit_code == 2
 
-    result = runner.invoke(app, [""])
-    assert result.exit_code == 2
-
-    # The script should fail if no positional argument is passed.
-    result = runner.invoke(app, [])
-    assert result.exit_code == 2
-
-    # The script should fail if an invalid log level is passed.
-    result = runner.invoke(app, ["--log-level", "invalid", "1"])
-    assert result.exit_code == 2
-
-    # The script should succeed if a valid log level is passed.
-    result = runner.invoke(app, ["--log-level", "debug", "1"])
-    assert result.exit_code == 0
-
-    # If a `--log-file-path` is provided, the script should output logs to that file.
+def test_main_log_file() -> None:
     with tempfile.NamedTemporaryFile() as temp_file:
         result = runner.invoke(app, ["--log-file-path", temp_file.name, "1"])
         assert result.exit_code == 0

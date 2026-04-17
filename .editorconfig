@@ -19,5 +19,6 @@ quote_type = double
 
 [*.{md,}]
 indent_size = 2
+max_line_length = 80
 # In Markdown, blank lines can be forced by ending a line with two spaces.
 trim_trailing_whitespace = false

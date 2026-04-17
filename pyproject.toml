@@ -17,6 +17,7 @@ dependencies = [
   "typer==0.24.1",
 ]
 description = "Python template project using the `uv` project manager."
+keywords = ["python", "template", "uv", "ruff", "ty"]
 license = { file = "LICENSE" }
 name = "uv-python-project-template"
 readme = "README.md"
@@ -33,16 +34,16 @@ Source = "https://github.com/h-holm/uv-python-project-template"
 
 [dependency-groups]
 test = [
-  "pytest==9.0.2",
+  "pytest==9.0.3",
   "pytest-cov==7.1.0",
 ]
 lint = [
-  "ruff==0.15.8",
-  "ty==0.0.26",
+  "ruff==0.15.11",
+  "ty==0.0.31",
   { include-group = "test" },
 ]
 pre = [
-  "prek==0.3.8",
+  "prek==0.3.9",
   { include-group = "lint" },
 ]
 
@@ -66,9 +67,14 @@ branch = true
 relative_files = true
 source = ["src/uv_python_project_template"]
 
+[tool.markdownlint-cli2]
+# Claude instructions can reference other files. Such imports trigger `markdownlint` complaints.
+ignores = ["**/*CLAUDE.md"]
+config.MD013.code_block_line_length = 120
+
 [tool.pytest.ini_options]
 addopts = "--cov=src/uv_python_project_template --cov-report=term-missing --cov-fail-under=80 --doctest-glob='*.md'"
-minversion = "9.0.2"
+minversion = "9.0.3"
 pythonpath = ["src"]
 testpaths = ["tests"]
 

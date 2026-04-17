@@ -11,15 +11,10 @@ defaults:
 jobs:
   code-quality-checks:
     name: Code Quality Checks
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
       - name: Extract `uv` Version from Dockerfile
         id: uv-version
