@@ -14,9 +14,33 @@ defaults:
     shell: bash
 
 jobs:
+  # When a tagged commit is pushed to `main`, two independent `push` events are triggered: one for the branch and one
+  # for the tag. Short-circuit the branch-triggered run so only the tag-triggered run proceeds.
+  check-duplicate:
+    name: Check for Duplicate Run
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          # Tags are not fetched by default; required so `git tag --points-at` sees tags that point at this commit.
+          fetch-tags: true
+      - name: Check if Commit is Also Tagged
+        id: check
+        run: |
+          if [[ "${GITHUB_REF}" == refs/heads/* ]] && [ -n "$(git tag --points-at "${GITHUB_SHA}")" ]; then
+            echo "Commit ${GITHUB_SHA} has an associated tag; the tag-triggered run will handle it."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
   validate-tag:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    needs: [check-duplicate]
+    if: needs.check-duplicate.outputs.skip != 'true' && startsWith(github.ref, 'refs/tags/')
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v6
@@ -31,6 +55,8 @@ jobs:
 
   # Check which file(s) were changed, in order to decide which jobs to run.
   paths-filter:
+    needs: [check-duplicate]
+    if: needs.check-duplicate.outputs.skip != 'true'
     uses: ./.github/workflows/paths-filter.yaml
 
   integration-test:

@@ -7,7 +7,6 @@ on:
         description: 'The GitHub environment to use'
         type: string
         required: true
-        default: ''
 
 concurrency:
   group: 'promote-${{ github.workflow }}-${{ github.ref || github.run_id }}'
@@ -17,7 +16,7 @@ defaults:
     shell: bash
 
 # After an already-pushed image has been confirmed to work via the integration test and deployment, supplement the
-# image with additional tags such as "latest", the branch name (e.g., "main") and the SemVer tag (if any).
+# image with additional tags such as the branch name (e.g., "main") and the SemVer tag (if any).
 jobs:
   promote-image:
     name: Promote Image
@@ -56,17 +55,37 @@ jobs:
           password: ${{ steps.gcp-auth.outputs.access_token }}
           registry: ${{ env.ARTIFACT_REGISTRY_HOSTNAME }}
 
+      # On a tag push, `github.ref` equates to "refs/tags/<version>". This does not trigger the `type=ref,event=branch`
+      # condition in the `docker/metadata-action` step below. If the tag being pushed is at the tip of the `main`
+      # branch, it is still desirable to have the branch name applied as a tag to the container image. To ensure that
+      # this is the case, check explicitly if the tagged commit is at the tip of `main`.
+      - name: Check if Commit is Tip of main
+        id: main-tip
+        # Only relevant for tag pushes; skip otherwise. An unset `is_main_tip` output evaluates falsy, which is the
+        # correct default for the `type=raw` enable conditions below.
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |-
+          git fetch origin main --depth=1
+          if [ "$(git rev-parse origin/main)" = "${GITHUB_SHA}" ]; then
+            echo "is_main_tip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_main_tip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Generate Tags
         uses: docker/metadata-action@v6
         with:
           images: ${{ env.ARTIFACT_REGISTRY_HOSTNAME }}/${{ env.ARTIFACT_REGISTRY_URL }}/${{ github.event.repository.name }}
-          # Add the branch name and SemVer tags, as well as the "latest" tag if on the `main` branch.
+          # Tag the container image with the branch name and SemVer tag (if any). If this workflow was instantiated by
+          # a SemVer tag being pushed, ensure that a "latest" tag and the branch name are also applied, but only if the
+          # tagged commit is at the tip of `main`.
           tags: |-
             type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=raw,value=main,enable=${{ startsWith(github.ref, 'refs/tags/') && steps.main-tip.outputs.is_main_tip == 'true' }}
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/') && steps.main-tip.outputs.is_main_tip == 'true' }}
 
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
