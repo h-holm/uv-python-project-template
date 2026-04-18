@@ -22,7 +22,7 @@ license = { file = "LICENSE" }
 name = "uv-python-project-template"
 readme = "README.md"
 requires-python = ">=3.14"
-version = "0.4.1"
+version = "0.5.0"
 
 [project.urls]
 Documentation = "https://github.com/h-holm/uv-python-project-template"
