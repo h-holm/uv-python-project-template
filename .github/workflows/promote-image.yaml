@@ -77,15 +77,13 @@ jobs:
         with:
           images: ${{ env.ARTIFACT_REGISTRY_HOSTNAME }}/${{ env.ARTIFACT_REGISTRY_URL }}/${{ github.event.repository.name }}
           # Tag the container image with the branch name and SemVer tag (if any). If this workflow was instantiated by
-          # a SemVer tag being pushed, ensure that a "latest" tag and the branch name are also applied, but only if the
-          # tagged commit is at the tip of `main`.
+          # a SemVer tag being pushed to `main`, ensure that the branch name tag is also applied to the image.
           tags: |-
             type=ref,event=branch
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=raw,value=main,enable=${{ startsWith(github.ref, 'refs/tags/') && steps.main-tip.outputs.is_main_tip == 'true' }}
-            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/') && steps.main-tip.outputs.is_main_tip == 'true' }}
 
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
