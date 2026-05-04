@@ -27,7 +27,7 @@ repos:
         priority: 0
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.22.0
+    rev: v0.22.1
     hooks:
       - id: markdownlint-cli2
         entry: markdownlint-cli2 --config pyproject.toml --configPointer /tool/markdownlint-cli2
@@ -62,7 +62,7 @@ repos:
 
   # Ensure the `uv.lock` file is in sync with the `pyproject.toml` config.
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.11.7
+    rev: 0.11.8
     hooks:
       - id: uv-lock
         priority: 0
@@ -75,7 +75,7 @@ repos:
         priority: 1
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.11
+    rev: v0.15.12
     hooks:
       - id: ruff-check
         types_or: [python, pyi, jupyter]
