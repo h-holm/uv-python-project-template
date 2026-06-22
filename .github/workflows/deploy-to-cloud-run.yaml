@@ -23,7 +23,7 @@ jobs:
       skip: ${{ steps.check.outputs.skip }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # Tags are not fetched by default; required so `git tag --points-at` sees tags that point at this commit.
           fetch-tags: true
@@ -43,7 +43,7 @@ jobs:
     if: needs.check-duplicate.outputs.skip != 'true' && startsWith(github.ref, 'refs/tags/')
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Validate Tag Matches Package Version
       run: |
         PACKAGE_VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
@@ -106,7 +106,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Authenticate to Google Cloud via Workload Identity Federation (WIF).
       - name: Authenticate to Google Cloud
