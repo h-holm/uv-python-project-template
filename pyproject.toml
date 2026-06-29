@@ -14,7 +14,7 @@ classifiers = [
 dependencies = [
   "loguru==0.7.3",
   "tabulate==0.10.0",
-  "typer==0.26.7",
+  "typer==0.26.8",
 ]
 description = "Python template project using the `uv` project manager."
 keywords = ["python", "template", "uv", "ruff", "ty"]
@@ -34,12 +34,12 @@ Source = "https://github.com/h-holm/uv-python-project-template"
 
 [dependency-groups]
 test = [
-  "pytest==9.1.0",
+  "pytest==9.1.1",
   "pytest-cov==7.1.0",
 ]
 lint = [
-  "ruff==0.15.17",
-  "ty==0.0.49",
+  "ruff==0.15.20",
+  "ty==0.0.55",
   { include-group = "test" },
 ]
 pre = [
