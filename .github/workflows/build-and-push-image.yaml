@@ -39,7 +39,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Authenticate to Google Cloud via Workload Identity Federation (WIF).
       - name: Authenticate to Google Cloud
