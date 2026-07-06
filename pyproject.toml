@@ -43,7 +43,7 @@ lint = [
   { include-group = "test" },
 ]
 pre = [
-  "prek==0.4.6",
+  "prek==0.4.8",
   { include-group = "lint" },
 ]
 
