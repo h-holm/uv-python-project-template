@@ -4,12 +4,12 @@ on:
   workflow_call:
     inputs:
       GITHUB_ENVIRONMENT:
-        description: 'The GitHub environment to use'
+        description: "The GitHub environment to use"
         type: string
         required: true
 
 concurrency:
-  group: 'promote-${{ github.workflow }}-${{ github.ref || github.run_id }}'
+  group: "promote-${{ github.workflow }}-${{ github.ref || github.run_id }}"
 
 defaults:
   run:

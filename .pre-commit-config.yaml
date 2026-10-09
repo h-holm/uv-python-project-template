@@ -1,6 +1,3 @@
-ci:
-  skip: [uv-ty]
-
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -17,24 +14,24 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: mixed-line-ending
-        args: ['--fix=auto'] # Replace "auto" with "lf" to enforce Linux/Mac line endings or "crlf" for Windows
+        args: ["--fix=auto"] # Replace "auto" with "lf" to enforce Linux/Mac line endings or "crlf" for Windows
         priority: 0
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.25
+    rev: 0.26
     hooks:
       - id: validate-pyproject
         priority: 0
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.23.0
+    rev: v0.23.3
     hooks:
       - id: markdownlint-cli2
         entry: markdownlint-cli2 --config pyproject.toml --configPointer /tool/markdownlint-cli2
         priority: 0
 
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.11.0.1
+    rev: v0.11.0.1-1
     hooks:
       - id: shellcheck
         priority: 0
@@ -57,25 +54,25 @@ repos:
           # `actionlint` offers a feature which extracts shell scripts in GitHub Actions `run:` steps and checks them
           # with `shellcheck`. This is arguably the most useful feature of `actionlint`, but the feature only works if
           # `shellcheck` is installed.
-          - 'github.com/wasilibs/go-shellcheck/cmd/shellcheck@v0.11.1'
+          - "github.com/wasilibs/go-shellcheck/cmd/shellcheck@v0.11.1"
         priority: 0
 
   # Ensure the `uv.lock` file is in sync with the `pyproject.toml` config.
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.11.26
+    rev: 0.12.24
     hooks:
       - id: uv-lock
         priority: 0
 
   # Ensure that `ruff` and `ty` versions here in the `prek` hooks align with the `uv.lock` file.
   - repo: https://github.com/tsvikas/sync-with-uv
-    rev: v0.5.0
+    rev: v0.6.0
     hooks:
       - id: sync-with-uv
         priority: 1
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.20
+    rev: v0.16.10
     hooks:
       - id: ruff-check
         types_or: [python, pyi, jupyter]
@@ -85,15 +82,9 @@ repos:
         types_or: [python, pyi, jupyter]
         priority: 1
 
-  # No official `ty` hook exists. Until one is created, use `uv` and the "lint" dependency group and run `ty` in
-  #'local' mode. This also ensures that settings and versions between the `pre-commit` hooks and the `pyproject.toml`
-  # are aligned.
-  - repo: local
+  - repo: https://github.com/astral-sh/ty-pre-commit
+    # ty version.
+    rev: v0.0.85
     hooks:
-      - id: uv-ty
-        name: uv ty
-        entry: uv run --group lint ty check
-        language: system
-        types_or: [python, pyi, jupyter]
-        verbose: true
+      - id: ty
         priority: 1
