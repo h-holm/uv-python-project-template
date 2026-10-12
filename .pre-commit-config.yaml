@@ -1,3 +1,8 @@
+# `pre-commit.ci` runs hooks without network access. The `ty` hook needs to install the project dependencies to resolve
+# imports, so skip it there. Type checking still runs in the `code-quality.yaml` GitHub Actions workflow.
+ci:
+  skip: [ty]
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
