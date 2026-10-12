@@ -5,18 +5,15 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
-  # Allow this workflow to be called from other workflows.
-  workflow_call:
-    # To allow this re-usable workflow to read secrets from the correct GitHub environment when called from another
-    # workflow, use a `workflow_call.inputs`-based approach for the setting the GitHub environment.
-    inputs:
-      GITHUB_ENVIRONMENT:
-        description: 'The GitHub environment to use'
-        type: string
-        required: true
+  # Run this workflow on any commit pushed to `main`. If the commit introduces a new version in the `pyproject.toml`, the
+  # vetted image is released: the commit is tagged with the version and the image is deployed.
+  push:
+    branches: ['main']
 
+# Only cancel superseded PR runs. Each `main` run must complete, as a cancelled run would skip the release of a new
+# version. Using the unique run ID as the group effectively disables concurrency limits on `main`.
 concurrency:
-  group: 'integration-${{ github.workflow }}-${{ github.ref || github.run_id }}'
+  group: "integration-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}"
   cancel-in-progress: true
 
 defaults:
@@ -28,12 +25,46 @@ jobs:
   paths-filter:
     uses: ./.github/workflows/paths-filter.yaml
 
+  # Validate the version in the `pyproject.toml` against the released versions (the SemVer tags of the repository). The
+  # version must either equal the latest released version, or be a new, higher version that is released once merged.
+  check-version:
+    name: Check Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check-version.outputs.version }}
+      is-new-version: ${{ steps.check-version.outputs.is-new-version }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Check Version
+        id: check-version
+        run: |
+          version=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Version '$version' is not of the form <major>.<minor>.<patch>."
+            exit 1
+          fi
+          latest=$(git ls-remote --tags --refs origin | sed 's|.*refs/tags/||' \
+            | { grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' || true; } | sort -V | tail -n 1)
+          if [[ "$version" == "$latest" ]]; then
+            is_new_version=false
+          elif [[ "$(printf '%s\n%s\n' "$latest" "$version" | sort -V | tail -n 1)" == "$version" ]]; then
+            is_new_version=true
+          else
+            echo "::error::Version '$version' is lower than the latest released version '$latest'."
+            exit 1
+          fi
+          echo "Version: '$version'. Latest released version: '${latest:-none}'. New version: $is_new_version."
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "is-new-version=$is_new_version" >> "$GITHUB_OUTPUT"
+
   # Run the CodeQL Analysis workflow.
   codeql-analysis:
     name: CodeQL Analysis
     uses: ./.github/workflows/codeql-analysis.yaml
     needs: [paths-filter]
-    if: needs.paths-filter.outputs.application-relevant-files-changed == 'true' || startsWith(github.ref, 'refs/tags/')
+    if: needs.paths-filter.outputs.application-relevant-files-changed == 'true'
     permissions:
       actions: read
       contents: read
@@ -44,7 +75,7 @@ jobs:
     name: Build and Push Image
     uses: ./.github/workflows/build-and-push-image.yaml
     needs: [paths-filter]
-    if: needs.paths-filter.outputs.application-relevant-files-changed == 'true' || startsWith(github.ref, 'refs/tags/')
+    if: needs.paths-filter.outputs.application-relevant-files-changed == 'true'
     secrets: inherit
     permissions:
       contents: read
@@ -53,20 +84,16 @@ jobs:
     # Secrets set in a GitHub Environment do not trickle down to re-used workflows as desired. This is a workaround to
     # make the required secrets available to the `build-and-push-image` job when calling it from here.
     with:
-      GITHUB_ENVIRONMENT: |-
-        ${{ startsWith(github.ref, 'refs/tags') && 'prd'
-         || github.ref == 'refs/heads/main' && 'prd'
-         || 'stg' }}
+      GITHUB_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prd' || 'stg' }}
 
   integration-test:
     name: Integration Test
     needs: [paths-filter, build-and-push-image]
-    if: needs.paths-filter.outputs.application-relevant-files-changed == 'true' || startsWith(github.ref, 'refs/tags/')
+    if: needs.paths-filter.outputs.application-relevant-files-changed == 'true'
     runs-on: ubuntu-latest
 
-    # If this workflow is called from another workflow, use the `GITHUB_ENVIRONMENT` input variable. Otherwise, set the
-    # GitHub Environment to "stg". This catches PRs that do not have `main` as the target branch.
-    environment: ${{ inputs.GITHUB_ENVIRONMENT != '' && inputs.GITHUB_ENVIRONMENT || 'stg' }}
+    # Target the "prd" GitHub environment for pushes to `main`, and "stg" for PRs.
+    environment: ${{ github.ref == 'refs/heads/main' && 'prd' || 'stg' }}
     env:
       ARTIFACT_REGISTRY_HOSTNAME: "${{ secrets.GCP_LOCATION }}-docker.pkg.dev"
       ARTIFACT_REGISTRY_URL: "${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_ARTIFACT_REGISTRY_NAME }}"
@@ -104,3 +131,55 @@ jobs:
             --args="--log-level,debug,123" \
             --execute-now \
             --wait
+
+  # On a push to `main`, tag the now-vetted image with `main`.
+  promote-image:
+    name: Promote Image
+    uses: ./.github/workflows/promote-image.yaml
+    needs: [integration-test]
+    if: github.event_name == 'push' && needs.integration-test.result == 'success'
+    secrets: inherit
+    permissions:
+      contents: read
+      id-token: write
+    with:
+      GITHUB_ENVIRONMENT: prd
+
+  # If a vetted commit on `main` introduces a new version, tag the commit with the version. The tag is created before the
+  # deployment, so that a version always refers to the same commit. If the deployment fails, re-run the failed jobs.
+  create-tag:
+    name: Create Tag
+    needs: [check-version, integration-test]
+    if: >-
+      github.event_name == 'push'
+      && needs.check-version.outputs.is-new-version == 'true'
+      && needs.integration-test.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create Tag
+        uses: actions/github-script@v9
+        env:
+          VERSION: ${{ needs.check-version.outputs.version }}
+        with:
+          script: |
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/${process.env.VERSION}`,
+              sha: context.sha,
+            });
+
+  # Deploy the vetted image of the new version. Note that a tag created via the `GITHUB_TOKEN` does not trigger other
+  # workflows, which is why the deployment workflow is called directly.
+  deploy:
+    name: Deploy
+    uses: ./.github/workflows/deploy-to-cloud-run.yaml
+    needs: [check-version, create-tag]
+    secrets: inherit
+    permissions:
+      contents: write
+      id-token: write
+    with:
+      VERSION: ${{ needs.check-version.outputs.version }}

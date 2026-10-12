@@ -7,7 +7,7 @@
 [![ty][ty-badge]][ty]
 [![Pytest][pytest-badge]][pytest]
 [![prek][prek-badge]][prek]
-[![Deploy to Cloud Run][deploy-badge]][deploy]
+[![Integration Test][integration-test-badge]][integration-test]
 [![CodeQL][codeql-badge]][codeql-workflow]
 [![pre-commit.ci status][pre-commit-ci-badge]][pre-commit-ci]
 
@@ -48,13 +48,19 @@ On any pull request, target a `stg` staging environment and:
   [Google Cloud Run][gcp-cloud-run] job that runs the application logic
   end-to-end using the newly built container image.
 
-On a commit/tag being merged/pushed (in)to the `main` branch, target a `prd`
+On a commit being merged/pushed into the `main` branch, target a `prd`
 production environment and:
 
 - perform the same steps as above;
-- deploy a Cloud Run job;
-- promote the now-vetted container image by adding tags to it such as `latest`,
-  `main` and the [SemVer][semver] tag (if any).
+- tag the now-vetted container image with `main`;
+- if the commit introduces a new version in the `pyproject.toml`, release it:
+  - tag the commit with the version `<major>.<minor>.<patch>`;
+  - deploy the vetted container image as a Cloud Run job;
+  - tag the deployed container image with the [SemVer][semver] tags
+    `<major>.<minor>.<patch>`, `<major>.<minor>` and `<major>`, and `latest`;
+  - create a GitHub Release named `Release <major>.<minor>.<patch>` with
+    auto-generated release notes listing the PRs merged since the previous
+    release.
 
 ## Development 👨‍💻
 
@@ -155,11 +161,11 @@ See [LICENSE](LICENSE).
 [codeql-workflow]: https://github.com/h-holm/uv-python-project-template/actions/workflows/codeql-analysis.yaml
 [coverage]: https://coverage.readthedocs.io/en/latest
 [dep]: https://github.com/dependabot
-[deploy]: https://github.com/h-holm/uv-python-project-template/actions/workflows/deploy-to-cloud-run.yaml
-[deploy-badge]: https://github.com/h-holm/uv-python-project-template/workflows/Deploy%20to%20Cloud%20Run/badge.svg
 [gcp-artifact-registry]: https://cloud.google.com/artifact-registry/docs
 [gcp-cloud-run]: https://cloud.google.com/run?hl=en
 [github-actions]: https://docs.github.com/en/actions
+[integration-test]: https://github.com/h-holm/uv-python-project-template/actions/workflows/integration-test.yaml
+[integration-test-badge]: https://github.com/h-holm/uv-python-project-template/actions/workflows/integration-test.yaml/badge.svg
 [llm]: https://en.wikipedia.org/wiki/Language_model
 [loguru]: https://github.com/Delgan/loguru
 [mit]: https://opensource.org/licenses/MIT
