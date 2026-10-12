@@ -7,7 +7,7 @@
 [![ty][ty-badge]][ty]
 [![Pytest][pytest-badge]][pytest]
 [![prek][prek-badge]][prek]
-[![Deploy to Cloud Run][deploy-badge]][deploy]
+[![Integration Test][integration-test-badge]][integration-test]
 [![CodeQL][codeql-badge]][codeql-workflow]
 [![pre-commit.ci status][pre-commit-ci-badge]][pre-commit-ci]
 
@@ -48,13 +48,19 @@ On any pull request, target a `stg` staging environment and:
   [Google Cloud Run][gcp-cloud-run] job that runs the application logic
   end-to-end using the newly built container image.
 
-On a commit/tag being merged/pushed (in)to the `main` branch, target a `prd`
+On a commit being merged/pushed into the `main` branch, target a `prd`
 production environment and:
 
 - perform the same steps as above;
-- deploy a Cloud Run job;
-- promote the now-vetted container image by adding tags to it such as `latest`,
-  `main` and the [SemVer][semver] tag (if any).
+- tag the now-vetted container image with `main`;
+- if the commit introduces a new version in the `pyproject.toml`, release it:
+  - tag the commit with the version `<major>.<minor>.<patch>`;
+  - deploy the vetted container image as a Cloud Run job;
+  - tag the deployed container image with the [SemVer][semver] tags
+    `<major>.<minor>.<patch>`, `<major>.<minor>` and `<major>`, and `latest`;
+  - create a GitHub Release named `Release <major>.<minor>.<patch>` with
+    auto-generated release notes listing the PRs merged since the previous
+    release.
 
 ## Development 👨‍💻
 
@@ -120,24 +126,27 @@ uv lock --upgrade-package ${PACKAGE_NAME}             # Upgrade (only) the `${PA
 # Remember to commit the updated uv.lock file.
 ```
 
-### Bumping the Version
+### Releasing a New Version
+
+The version in the `pyproject.toml` controls releases. To release a new
+version, bump it in a PR:
 
 ```shell
-./scripts/bump-version.sh patch                      # Bump the patch version (e.g. 0.4.1 -> 0.4.2).
-./scripts/bump-version.sh minor                      # Bump the minor version (e.g. 0.4.1 -> 0.5.0).
-./scripts/bump-version.sh major                      # Bump the major version (e.g. 0.4.1 -> 1.0.0).
+uv version --bump patch  # Bump the patch version (e.g. 0.4.1 -> 0.4.2).
+uv version --bump minor  # Bump the minor version (e.g. 0.4.1 -> 0.5.0).
+uv version --bump major  # Bump the major version (e.g. 0.4.1 -> 1.0.0).
 ```
 
-The script updates `pyproject.toml`, syncs `uv.lock`, commits, and creates a
-`git` tag. After running it, push with:
+Commit the updated `pyproject.toml` and `uv.lock` files and open a PR. The PR
+checks fail if the version is not of the form `<major>.<minor>.<patch>` or is
+lower than the latest released version. Once the PR is merged and the vetted
+image has passed the integration test on `main`, the CI/CD pipeline releases the
+new version as described in the CI/CD section above. Do not create version tags
+manually; the pipeline creates them.
 
-```shell
-git push --atomic origin main $(uv version --short)  # Push the commit and tag together.
-```
-
-Tags must be bare SemVer strings (e.g. `0.3.1`, not `v0.3.1`). The CI/CD
-pipeline validates that the tag matches the `project.version` in the
-`pyproject.toml` and will fail the deployment if they differ.
+If a deployment fails, re-run the failed jobs of the workflow run. To roll back
+to (or redeploy) an already-released version, run the
+[Deploy to Cloud Run][deploy] workflow manually with that version as input.
 
 ## Infrastructure and CI/CD Set-Up 🏗️
 
@@ -156,10 +165,11 @@ See [LICENSE](LICENSE).
 [coverage]: https://coverage.readthedocs.io/en/latest
 [dep]: https://github.com/dependabot
 [deploy]: https://github.com/h-holm/uv-python-project-template/actions/workflows/deploy-to-cloud-run.yaml
-[deploy-badge]: https://github.com/h-holm/uv-python-project-template/workflows/Deploy%20to%20Cloud%20Run/badge.svg
 [gcp-artifact-registry]: https://cloud.google.com/artifact-registry/docs
 [gcp-cloud-run]: https://cloud.google.com/run?hl=en
 [github-actions]: https://docs.github.com/en/actions
+[integration-test]: https://github.com/h-holm/uv-python-project-template/actions/workflows/integration-test.yaml
+[integration-test-badge]: https://github.com/h-holm/uv-python-project-template/actions/workflows/integration-test.yaml/badge.svg
 [llm]: https://en.wikipedia.org/wiki/Language_model
 [loguru]: https://github.com/Delgan/loguru
 [mit]: https://opensource.org/licenses/MIT

@@ -17,7 +17,6 @@ image built from the source code.
 * `/src`: Application source code.
 * `/tests`: Unit tests.
 * `/docs`: Documentation describing the infrastructure set-up.
-* `/scripts`: Utility Bash scripts not directly related to the core logic.
 * `/.github`: GitHub Actions configurations and CI/CD workflow definitions.
 
 ## Libraries, Frameworks and Conventions

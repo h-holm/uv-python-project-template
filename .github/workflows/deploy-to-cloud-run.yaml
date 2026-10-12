@@ -1,95 +1,40 @@
 name: Deploy to Cloud Run
 
 on:
-  push:
-    tags: ['**']
-    branches: ['main']
+  # Called by the `integration-test.yaml` workflow when a vetted commit on `main` introduces a new version. No image is
+  # built here: the image built and vetted earlier in the calling workflow run is deployed.
+  workflow_call:
+    inputs:
+      VERSION:
+        description: "The new version to deploy and release"
+        type: string
+        required: true
 
-concurrency:
-  group: 'deploy-${{ github.workflow }}-${{ github.ref || github.run_id }}'
-  cancel-in-progress: true
+  # Allow redeploying an already-released version manually, e.g., to roll back to a previous version.
+  workflow_dispatch:
+    inputs:
+      VERSION:
+        description: "The already-released version to redeploy (e.g., 0.5.2)"
+        type: string
+        required: true
 
 defaults:
   run:
     shell: bash
 
 jobs:
-  # When a tagged commit is pushed to `main`, two independent `push` events are triggered: one for the branch and one
-  # for the tag. Short-circuit the branch-triggered run so only the tag-triggered run proceeds.
-  check-duplicate:
-    name: Check for Duplicate Run
-    runs-on: ubuntu-latest
-    outputs:
-      skip: ${{ steps.check.outputs.skip }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v7
-        with:
-          # Tags are not fetched by default; required so `git tag --points-at` sees tags that point at this commit.
-          fetch-tags: true
-      - name: Check if Commit is Also Tagged
-        id: check
-        run: |
-          if [[ "${GITHUB_REF}" == refs/heads/* ]] && [ -n "$(git tag --points-at "${GITHUB_SHA}")" ]; then
-            echo "Commit ${GITHUB_SHA} has an associated tag; the tag-triggered run will handle it."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-          fi
-
-  validate-tag:
-    runs-on: ubuntu-latest
-    needs: [check-duplicate]
-    if: needs.check-duplicate.outputs.skip != 'true' && startsWith(github.ref, 'refs/tags/')
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v7
-    - name: Validate Tag Matches Package Version
-      run: |
-        PACKAGE_VERSION=$(grep '^version = ' pyproject.toml | cut -d'"' -f2)
-        GIT_TAG="${GITHUB_REF#refs/tags/}"
-        if [ "$GIT_TAG" != "$PACKAGE_VERSION" ]; then
-          echo "Tag '$GIT_TAG' does not match package version '$PACKAGE_VERSION'."
-          exit 1
-        fi
-
-  # Check which file(s) were changed, in order to decide which jobs to run.
-  paths-filter:
-    needs: [check-duplicate]
-    if: needs.check-duplicate.outputs.skip != 'true'
-    uses: ./.github/workflows/paths-filter.yaml
-
-  integration-test:
-    name: Integration Test
-    uses: ./.github/workflows/integration-test.yaml
-    needs: [paths-filter, validate-tag]
-    if: >-
-      !cancelled()
-      && (needs.validate-tag.result == 'success' || needs.validate-tag.result == 'skipped')
-      && (needs.paths-filter.outputs.application-relevant-files-changed == 'true' || startsWith(github.ref, 'refs/tags/'))
-    secrets: inherit
-    permissions:
-      actions: read
-      contents: read
-      id-token: write
-      security-events: write
-    with:
-      GITHUB_ENVIRONMENT: |-
-        ${{ startsWith(github.ref, 'refs/tags') && 'prd'
-         || github.ref == 'refs/heads/main' && 'prd'
-         || 'stg' }}
-
   deploy-cloud-run-job:
     name: Deploy Cloud Run Job
     runs-on: ubuntu-latest
-    needs: [check-duplicate, integration-test]
-    if: always() && !contains(needs.*.result, 'failure') && needs.check-duplicate.outputs.skip != 'true'
+    environment: prd
 
-    # If a commit OR tag was pushed into `main`, set the GitHub environment to "prd", else "stg".
-    environment: |-
-      ${{ startsWith(github.ref, 'refs/tags') && 'prd'
-       || github.ref == 'refs/heads/main' && 'prd'
-       || 'stg' }}
+    # Never run two deployments at once, and never cancel an in-progress deployment.
+    concurrency:
+      group: deploy-to-cloud-run-prd
+      cancel-in-progress: false
+
+    outputs:
+      is-latest-version: ${{ steps.check-version.outputs.is-latest-version }}
 
     env:
       ARTIFACT_REGISTRY_HOSTNAME: "${{ secrets.GCP_LOCATION }}-docker.pkg.dev"
@@ -98,6 +43,7 @@ jobs:
       RUNTIME_SERVICE_ACCOUNT_EMAIL: "${{ vars.GCP_RUNTIME_SERVICE_ACCOUNT_NAME }}@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com"
       # Use a shorter variable name as this is referenced multiple times.
       REPO_NAME: ${{ github.event.repository.name }}
+      VERSION: ${{ inputs.VERSION }}
 
     # The `gcp-auth` step requires these permissions to read and pass tokens.
     permissions:
@@ -108,23 +54,48 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v7
 
+      # A manual redeployment requires the version to be released already. A new version is only deployed if no higher
+      # version has been released in the meantime, e.g., by a later `main` run that finished first.
+      - name: Check Version
+        id: check-version
+        run: |
+          if ! git ls-remote --exit-code --tags origin "refs/tags/${VERSION}" > /dev/null; then
+            echo "::error::Version '${VERSION}' has not been released."
+            exit 1
+          fi
+          latest=$(git ls-remote --tags --refs origin | sed 's|.*refs/tags/||' \
+            | { grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' || true; } | sort -V | tail -n 1)
+          if [[ "$VERSION" == "$latest" ]]; then
+            echo "is-latest-version=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is-latest-version=false" >> "$GITHUB_OUTPUT"
+            if [[ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]]; then
+              echo "::notice::Skipping the deployment of '${VERSION}', as the higher version '${latest}' exists."
+            fi
+          fi
+
       # Authenticate to Google Cloud via Workload Identity Federation (WIF).
       - name: Authenticate to Google Cloud
         id: gcp-auth
+        if: github.event_name == 'workflow_dispatch' || steps.check-version.outputs.is-latest-version == 'true'
         uses: google-github-actions/auth@v3
         with:
           service_account: ${{ env.CICD_SERVICE_ACCOUNT_EMAIL }}
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           token_format: access_token
 
-      # Create (or update if one already exists) a Cloud Run job. Attach a service account (SA) to the Cloud Run job
-      # that has the necessary privileges for running the application logic. Note that this "runtime SA" is different
-      # from the "CI/CD SA" used to run this GitHub Actions workflow. Make sure to `--execute-now` and `--wait` for the
-      # job to finish, so that the CI job fails in case the job fails.
+      # Create (or update if one already exists) a Cloud Run job. On a manual redeployment, use the image tagged with
+      # the released version. Otherwise, use the image built and vetted earlier in the calling workflow run. Attach a
+      # service account (SA) to the Cloud Run job that has the necessary privileges for running the application logic.
+      # Note that this "runtime SA" is different from the "CI/CD SA" used to run this GitHub Actions workflow. Make sure
+      # to `--execute-now` and `--wait` for the job to finish, so that the CI job fails in case the job fails.
       - name: Deploy Cloud Run Job
+        if: steps.gcp-auth.outcome == 'success'
+        env:
+          IMAGE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.VERSION || format('sha-{0}', github.sha) }}
         run: |-
           gcloud run jobs deploy "${{ env.REPO_NAME }}" \
-            --image "${{ env.ARTIFACT_REGISTRY_HOSTNAME }}/${{ env.ARTIFACT_REGISTRY_URL }}/${{ env.REPO_NAME }}:sha-${{ github.sha }}" \
+            --image "${{ env.ARTIFACT_REGISTRY_HOSTNAME }}/${{ env.ARTIFACT_REGISTRY_URL }}/${{ env.REPO_NAME }}:${IMAGE_TAG}" \
             --max-retries 3 \
             --task-timeout "10m" \
             --parallelism 1 \
@@ -134,18 +105,46 @@ jobs:
             --execute-now \
             --wait
 
-  # If the tests and deployment jobs are successful, promote the already-pushed and now-vetted image.
+  # After a successful deployment of a new version, tag the deployed image with the version and `latest`.
   promote-image:
     name: Promote Image
     uses: ./.github/workflows/promote-image.yaml
     needs: [deploy-cloud-run-job]
-    if: always() && !contains(needs.*.result, 'failure')
+    if: github.event_name != 'workflow_dispatch' && needs.deploy-cloud-run-job.outputs.is-latest-version == 'true'
     secrets: inherit
     permissions:
-      contents: write
+      contents: read
       id-token: write
     with:
-      GITHUB_ENVIRONMENT: |-
-        ${{ startsWith(github.ref, 'refs/tags') && 'prd'
-         || github.ref == 'refs/heads/main' && 'prd'
-         || 'stg' }}
+      GITHUB_ENVIRONMENT: prd
+      VERSION: ${{ inputs.VERSION }}
+
+  # Create a GitHub Release for the new version, with release notes listing the PRs merged since the previous release.
+  # A version whose deployment was skipped (as a higher version exists) is still released, but not marked as latest.
+  create-github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [deploy-cloud-run-job, promote-image]
+    if: >-
+      !cancelled()
+      && github.event_name != 'workflow_dispatch'
+      && needs.deploy-cloud-run-job.result == 'success'
+      && needs.promote-image.result != 'failure'
+    permissions:
+      contents: write
+    steps:
+      - name: Create GitHub Release
+        uses: actions/github-script@v9
+        env:
+          VERSION: ${{ inputs.VERSION }}
+          IS_LATEST_VERSION: ${{ needs.deploy-cloud-run-job.outputs.is-latest-version }}
+        with:
+          script: |
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: process.env.VERSION,
+              name: `Release ${process.env.VERSION}`,
+              generate_release_notes: true,
+              make_latest: process.env.IS_LATEST_VERSION,
+            });

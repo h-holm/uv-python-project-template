@@ -7,7 +7,7 @@ on:
     # workflow, use a `workflow_call.inputs`-based approach for the setting the GitHub environment.
     inputs:
       GITHUB_ENVIRONMENT:
-        description: 'The GitHub environment to use'
+        description: "The GitHub environment to use"
         type: string
         required: true
 

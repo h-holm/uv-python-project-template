@@ -52,6 +52,19 @@ workflows:
     of. To follow [least-privilege principles][least-privilege], this should be
     a separate account from `GCP_CICD_SERVICE_ACCOUNT_NAME`.
 
+### Protecting the `prd` Environment
+
+Deployments to `prd` only happen from the `main` branch: either when a merged
+commit introduces a new version (see the
+[README](../README.md#releasing-a-new-version)), or when the
+[deploy-to-cloud-run](../.github/workflows/deploy-to-cloud-run.yaml) workflow is
+run manually to redeploy a released version. It is recommended to restrict the
+`prd` environment's [deployment branches and tags][github-env-deployment-refs]
+to the `main` branch, so that no other ref can access the production secrets.
+
+The pipeline creates version tags using the `GITHUB_TOKEN`. If tags are
+protected via repository rulesets, allow GitHub Actions to bypass them.
+
 ## Required Roles
 
 The `GCP_CICD_SERVICE_ACCOUNT_NAME` service account requires:
@@ -81,5 +94,6 @@ The workload identity provider requires:
 [gcp-wif]: https://docs.cloud.google.com/iam/docs/workload-identity-federation
 [gcp-workload-identity-user]: https://docs.cloud.google.com/iam/docs/service-account-permissions#workload-identity-user
 [github-actions]: https://docs.github.com/en/actions
+[github-env-deployment-refs]: https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments#deployment-branches-and-tags
 [github-envs]: https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments
 [least-privilege]: https://en.wikipedia.org/wiki/Principle_of_least_privilege
