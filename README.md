@@ -7,7 +7,7 @@
 [![ty][ty-badge]][ty]
 [![Pytest][pytest-badge]][pytest]
 [![prek][prek-badge]][prek]
-[![Integration Test][integration-test-badge]][integration-test]
+[![CI/CD][ci-cd-badge]][ci-cd]
 [![CodeQL][codeql-badge]][codeql-workflow]
 [![pre-commit.ci status][pre-commit-ci-badge]][pre-commit-ci]
 
@@ -159,6 +159,8 @@ See [LICENSE](LICENSE).
 
 [//]: # (References)
 
+[ci-cd]: https://github.com/h-holm/uv-python-project-template/actions/workflows/ci-cd.yaml
+[ci-cd-badge]: https://github.com/h-holm/uv-python-project-template/actions/workflows/ci-cd.yaml/badge.svg
 [codeql]: https://codeql.github.com
 [codeql-badge]: https://github.com/h-holm/uv-python-project-template/workflows/CodeQL%20Analysis/badge.svg
 [codeql-workflow]: https://github.com/h-holm/uv-python-project-template/actions/workflows/codeql-analysis.yaml
@@ -168,8 +170,6 @@ See [LICENSE](LICENSE).
 [gcp-artifact-registry]: https://cloud.google.com/artifact-registry/docs
 [gcp-cloud-run]: https://cloud.google.com/run?hl=en
 [github-actions]: https://docs.github.com/en/actions
-[integration-test]: https://github.com/h-holm/uv-python-project-template/actions/workflows/integration-test.yaml
-[integration-test-badge]: https://github.com/h-holm/uv-python-project-template/actions/workflows/integration-test.yaml/badge.svg
 [llm]: https://en.wikipedia.org/wiki/Language_model
 [loguru]: https://github.com/Delgan/loguru
 [mit]: https://opensource.org/licenses/MIT
