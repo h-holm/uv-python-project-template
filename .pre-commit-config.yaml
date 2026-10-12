@@ -65,7 +65,7 @@ repos:
 
   # Ensure the `uv.lock` file is in sync with the `pyproject.toml` config.
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.12.24
+    rev: 0.13.0
     hooks:
       - id: uv-lock
         priority: 0
@@ -90,7 +90,7 @@ repos:
 
   - repo: https://github.com/astral-sh/ty-pre-commit
     # ty version.
-    rev: v0.0.85
+    rev: v0.0.86
     hooks:
       - id: ty
         priority: 1
