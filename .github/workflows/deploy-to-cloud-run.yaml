@@ -1,7 +1,7 @@
 name: Deploy to Cloud Run
 
 on:
-  # Called by the `integration-test.yaml` workflow when a vetted commit on `main` introduces a new version. No image is
+  # Called by the `ci-cd.yaml` workflow when a vetted commit on `main` introduces a new version. No image is
   # built here: the image built and vetted earlier in the calling workflow run is deployed.
   workflow_call:
     inputs:

@@ -44,7 +44,7 @@ workflows:
     assume the identity of in the:
     - [build-and-push-image](../.github/workflows/build-and-push-image.yaml)
       workflow that registers a container image in the Artifact Registry,
-    - [integration-test](../.github/workflows/integration-test.yaml) and
+    - [ci-cd](../.github/workflows/ci-cd.yaml) and
       [deploy-to-cloud-run](../.github/workflows/deploy-to-cloud-run.yaml)
       workflows that execute Cloud Run jobs;
   - `GCP_RUNTIME_SERVICE_ACCOUNT_NAME`: the name of the GCP service account

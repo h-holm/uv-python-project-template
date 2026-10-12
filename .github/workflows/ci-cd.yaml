@@ -1,4 +1,4 @@
-name: Integration Test
+name: CI/CD
 
 on:
   # Run this workflow on any PR that is opened, reopened, or synchronized.
@@ -13,7 +13,7 @@ on:
 # Only cancel superseded PR runs. Each `main` run must complete, as a cancelled run would skip the release of a new
 # version. Using the unique run ID as the group effectively disables concurrency limits on `main`.
 concurrency:
-  group: "integration-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}"
+  group: "ci-cd-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}"
   cancel-in-progress: true
 
 defaults:
