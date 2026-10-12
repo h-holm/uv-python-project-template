@@ -126,24 +126,27 @@ uv lock --upgrade-package ${PACKAGE_NAME}             # Upgrade (only) the `${PA
 # Remember to commit the updated uv.lock file.
 ```
 
-### Bumping the Version
+### Releasing a New Version
+
+The version in the `pyproject.toml` controls releases. To release a new
+version, bump it in a PR:
 
 ```shell
-./scripts/bump-version.sh patch                      # Bump the patch version (e.g. 0.4.1 -> 0.4.2).
-./scripts/bump-version.sh minor                      # Bump the minor version (e.g. 0.4.1 -> 0.5.0).
-./scripts/bump-version.sh major                      # Bump the major version (e.g. 0.4.1 -> 1.0.0).
+uv version --bump patch  # Bump the patch version (e.g. 0.4.1 -> 0.4.2).
+uv version --bump minor  # Bump the minor version (e.g. 0.4.1 -> 0.5.0).
+uv version --bump major  # Bump the major version (e.g. 0.4.1 -> 1.0.0).
 ```
 
-The script updates `pyproject.toml`, syncs `uv.lock`, commits, and creates a
-`git` tag. After running it, push with:
+Commit the updated `pyproject.toml` and `uv.lock` files and open a PR. The PR
+checks fail if the version is not of the form `<major>.<minor>.<patch>` or is
+lower than the latest released version. Once the PR is merged and the vetted
+image has passed the integration test on `main`, the CI/CD pipeline releases the
+new version as described in the CI/CD section above. Do not create version tags
+manually; the pipeline creates them.
 
-```shell
-git push --atomic origin main $(uv version --short)  # Push the commit and tag together.
-```
-
-Tags must be bare SemVer strings (e.g. `0.3.1`, not `v0.3.1`). The CI/CD
-pipeline validates that the tag matches the `project.version` in the
-`pyproject.toml` and will fail the deployment if they differ.
+If a deployment fails, re-run the failed jobs of the workflow run. To roll back
+to (or redeploy) an already-released version, run the
+[Deploy to Cloud Run][deploy] workflow manually with that version as input.
 
 ## Infrastructure and CI/CD Set-Up 🏗️
 
@@ -161,6 +164,7 @@ See [LICENSE](LICENSE).
 [codeql-workflow]: https://github.com/h-holm/uv-python-project-template/actions/workflows/codeql-analysis.yaml
 [coverage]: https://coverage.readthedocs.io/en/latest
 [dep]: https://github.com/dependabot
+[deploy]: https://github.com/h-holm/uv-python-project-template/actions/workflows/deploy-to-cloud-run.yaml
 [gcp-artifact-registry]: https://cloud.google.com/artifact-registry/docs
 [gcp-cloud-run]: https://cloud.google.com/run?hl=en
 [github-actions]: https://docs.github.com/en/actions
