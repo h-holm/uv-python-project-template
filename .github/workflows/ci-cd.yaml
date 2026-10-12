@@ -132,6 +132,21 @@ jobs:
             --execute-now \
             --wait
 
+  # Summarize the results of the checks above in a single job, to be configured as the only required status check of
+  # the default branch. Skipped jobs (e.g., when no application-relevant files changed) count as passed. All upstream
+  # jobs must be listed, as a failure upstream of `integration-test` causes it to be skipped rather than to fail.
+  ci-passed:
+    name: CI Passed
+    if: always()
+    needs: [paths-filter, check-version, codeql-analysis, build-and-push-image, integration-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Results of Required Jobs
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |-
+          echo "::error::At least one required job failed or was cancelled."
+          exit 1
+
   # On a push to `main`, tag the now-vetted image with `main`.
   promote-image:
     name: Promote Image

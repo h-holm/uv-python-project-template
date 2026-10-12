@@ -65,6 +65,12 @@ to the `main` branch, so that no other ref can access the production secrets.
 The pipeline creates version tags using the `GITHUB_TOKEN`. If tags are
 protected via repository rulesets, allow GitHub Actions to bypass them.
 
+### Requiring Checks to Pass Before Merging
+
+The [ci-cd](../.github/workflows/ci-cd.yaml) workflow summarizes the results of
+all checks in its `CI Passed` job. To prevent merging PRs whose checks fail,
+configure `CI Passed` as the only required status check of the default branch.
+
 ## Required Roles
 
 The `GCP_CICD_SERVICE_ACCOUNT_NAME` service account requires:
