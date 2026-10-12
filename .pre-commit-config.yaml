@@ -18,7 +18,8 @@ repos:
         priority: 0
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: 0.26
+    # Quoted, as the version tag (e.g., `0.26`) would otherwise be parsed as a float.
+    rev: "0.26"
     hooks:
       - id: validate-pyproject
         priority: 0
