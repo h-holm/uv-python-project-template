@@ -1,3 +1,4 @@
+<!-- markdownlint-disable-file first-line-heading -->
 <!--
 Add one of the following prefixes to the pull request title, then delete this comment:
 [Fix]
