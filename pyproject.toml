@@ -7,7 +7,7 @@ authors = [{ name = "Henrik Holm", email = "no-reply@email.com" }]
 classifiers = [
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
@@ -21,8 +21,8 @@ keywords = ["python", "template", "uv", "ruff", "ty"]
 license = { file = "LICENSE" }
 name = "uv-python-project-template"
 readme = "README.md"
-requires-python = ">=3.14"
-version = "0.5.3"
+requires-python = ">=3.15"
+version = "1.0.0"
 
 [project.urls]
 Documentation = "https://github.com/h-holm/uv-python-project-template"
@@ -38,12 +38,12 @@ test = [
   "pytest-cov==7.1.0",
 ]
 lint = [
-  "ruff==0.17.0",
-  "ty==0.0.86",
+  "ruff==0.17.2",
+  "ty==0.0.91",
   { include-group = "test" },
 ]
 pre = [
-  "prek==0.5.5",
+  "prek==0.5.7",
   { include-group = "lint" },
 ]
 
@@ -67,10 +67,10 @@ branch = true
 relative_files = true
 source = ["src/uv_python_project_template"]
 
-[tool.markdownlint-cli2]
+[tool.markdownlint-cli]
 # Claude instructions can reference other files. Such imports trigger `markdownlint` complaints.
 ignores = ["**/*CLAUDE.md"]
-config.MD013.code_block_line_length = 120
+MD013.code_block_line_length = 120
 
 [tool.pytest.ini_options]
 addopts = "--cov=src/uv_python_project_template --cov-report=term-missing --cov-fail-under=80 --doctest-glob='*.md'"
@@ -81,7 +81,7 @@ testpaths = ["tests"]
 [tool.ruff]
 indent-width = 4
 line-length = 120
-target-version = "py314"
+target-version = "py315"
 
 [tool.ruff.lint]
 select = ["ALL"]

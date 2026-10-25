@@ -1,6 +1,6 @@
 # `uv` Python Project Template
 
-[![Python 3.14][python-badge]][python]
+[![Python 3.15][python-badge]][python]
 [![License: MIT][mit-badge]][mit]
 [![uv][uv-badge]][uv]
 [![Ruff][ruff-badge]][ruff]
@@ -180,8 +180,8 @@ See [LICENSE](LICENSE).
 [prek-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json
 [pytest]: https://docs.pytest.org
 [pytest-badge]: https://img.shields.io/static/v1?label=%E2%80%8E&message=Pytest&logo=Pytest&color=b647c4&logoColor=white
-[python]: https://docs.python.org/3/whatsnew/3.14.html
-[python-badge]: https://img.shields.io/badge/python-3.14-blue.svg
+[python]: https://docs.python.org/3/whatsnew/3.15.html
+[python-badge]: https://img.shields.io/badge/python-3.15-blue.svg
 [ruff]: https://github.com/astral-sh/ruff
 [ruff-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
 [semver]: https://semver.org

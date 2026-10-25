@@ -19,21 +19,20 @@ repos:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: mixed-line-ending
-        args: ["--fix=auto"] # Replace "auto" with "lf" to enforce Linux/Mac line endings or "crlf" for Windows
+        args: ['--fix=auto'] # Replace "auto" with "lf" to enforce Linux/Mac line endings or "crlf" for Windows
         priority: 0
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    # Quoted, as the version tag (e.g., `0.26`) would otherwise be parsed as a float.
-    rev: "0.26"
+    rev: v0.27
     hooks:
       - id: validate-pyproject
         priority: 0
 
-  - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.23.3
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.50.0
     hooks:
-      - id: markdownlint-cli2
-        entry: markdownlint-cli2 --config pyproject.toml --configPointer /tool/markdownlint-cli2
+      - id: markdownlint
+        entry: markdownlint --config pyproject.toml --configPointer /tool/markdownlint-cli
         priority: 0
 
   - repo: https://github.com/shellcheck-py/shellcheck-py
@@ -60,12 +59,12 @@ repos:
           # `actionlint` offers a feature which extracts shell scripts in GitHub Actions `run:` steps and checks them
           # with `shellcheck`. This is arguably the most useful feature of `actionlint`, but the feature only works if
           # `shellcheck` is installed.
-          - "github.com/wasilibs/go-shellcheck/cmd/shellcheck@v0.11.1"
+          - 'github.com/wasilibs/go-shellcheck/cmd/shellcheck@v0.11.1'
         priority: 0
 
   # Ensure the `uv.lock` file is in sync with the `pyproject.toml` config.
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.13.1
+    rev: 0.13.5
     hooks:
       - id: uv-lock
         priority: 0
@@ -78,7 +77,7 @@ repos:
         priority: 1
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.17.0
+    rev: v0.17.2
     hooks:
       - id: ruff-check
         types_or: [python, pyi, jupyter]
@@ -90,7 +89,7 @@ repos:
 
   - repo: https://github.com/astral-sh/ty-pre-commit
     # ty version.
-    rev: v0.0.89
+    rev: v0.0.91
     hooks:
       - id: ty
         priority: 1
