@@ -28,11 +28,11 @@ repos:
       - id: validate-pyproject
         priority: 0
 
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.50.0
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.23.3
     hooks:
-      - id: markdownlint
-        entry: markdownlint --config pyproject.toml --configPointer /tool/markdownlint-cli
+      - id: markdownlint-cli2
+        entry: markdownlint-cli2 --config pyproject.toml --configPointer /tool/markdownlint-cli2
         priority: 0
 
   - repo: https://github.com/shellcheck-py/shellcheck-py
