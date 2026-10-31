@@ -177,7 +177,7 @@ See [LICENSE](LICENSE).
 [pre-commit-ci]: https://results.pre-commit.ci/latest/github/h-holm/uv-python-project-template/main
 [pre-commit-ci-badge]: https://results.pre-commit.ci/badge/github/h-holm/uv-python-project-template/main.svg
 [prek]: https://github.com/j178/prek
-[prek-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/j178/prek/master/docs/assets/badge-v0.json
+[prek-badge]: https://raw.githubusercontent.com/j178/prek/main/docs/assets/badge.svg
 [pytest]: https://docs.pytest.org
 [pytest-badge]: https://img.shields.io/static/v1?label=%E2%80%8E&message=Pytest&logo=Pytest&color=b647c4&logoColor=white
 [python]: https://docs.python.org/3/whatsnew/3.15.html
@@ -189,6 +189,6 @@ See [LICENSE](LICENSE).
 [ty]: https://github.com/astral-sh/ty
 [ty-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json
 [uv]: https://github.com/astral-sh/uv
-[uv-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json
+[uv-badge]: https://img.shields.io/badge/Package_Manager-uv-green?logo=astral&logoColor=white
 [uv-install]: https://docs.astral.sh/uv/getting-started/installation
 [vscode]: https://code.visualstudio.com
