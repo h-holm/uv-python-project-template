@@ -34,16 +34,16 @@ Source = "https://github.com/h-holm/uv-python-project-template"
 
 [dependency-groups]
 test = [
-  "pytest==9.1.1",
+  "pytest==9.2.0",
   "pytest-cov==7.1.0",
 ]
 lint = [
-  "ruff==0.17.2",
-  "ty==0.0.91",
+  "ruff==0.17.3",
+  "ty==0.0.95",
   { include-group = "test" },
 ]
 pre = [
-  "prek==0.5.7",
+  "prek==0.5.9",
   { include-group = "lint" },
 ]
 
@@ -76,7 +76,7 @@ code_block_line_length = 120
 
 [tool.pytest.ini_options]
 addopts = "--cov=src/uv_python_project_template --cov-report=term-missing --cov-fail-under=80 --doctest-glob='*.md'"
-minversion = "9.1.1"
+minversion = "9.2.0"
 pythonpath = ["src"]
 testpaths = ["tests"]
 
