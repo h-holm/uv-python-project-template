@@ -189,6 +189,6 @@ See [LICENSE](LICENSE).
 [ty]: https://github.com/astral-sh/ty
 [ty-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json
 [uv]: https://github.com/astral-sh/uv
-[uv-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json
+[uv-badge]: https://img.shields.io/badge/Package_Manager-uv-green?logo=astral&logoColor=white
 [uv-install]: https://docs.astral.sh/uv/getting-started/installation
 [vscode]: https://code.visualstudio.com
