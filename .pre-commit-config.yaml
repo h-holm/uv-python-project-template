@@ -29,7 +29,7 @@ repos:
         priority: 0
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.23.3
+    rev: v0.24.0
     hooks:
       - id: markdownlint-cli2
         entry: markdownlint-cli2 --config pyproject.toml --configPointer /tool/markdownlint-cli2
