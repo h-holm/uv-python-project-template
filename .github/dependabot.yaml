@@ -3,52 +3,52 @@ version: 2
 updates:
   # Maintain Docker dependencies.
   - package-ecosystem: docker
-    assignees:
-      - 'h-holm'
     directory: '/'
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
+      interval: monthly
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
     groups:
-      minor-and-patch:
-        update-types:
-          - 'patch'
-          - 'minor'
-      major:
-        update-types:
-          - 'major'
+      docker:
+        patterns:
+          - '*'
+      security:
+        applies-to: security-updates
+        patterns:
+          - '*'
     labels:
       - 'dependencies'
       - 'docker'
 
   # Maintain GitHub Actions dependencies.
   - package-ecosystem: github-actions
-    assignees:
-      - 'h-holm'
     directory: '/'
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
+      interval: monthly
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
     groups:
-      minor-and-patch:
-        update-types:
-          - 'patch'
-          - 'minor'
-      major:
-        update-types:
-          - 'major'
+      github-actions:
+        patterns:
+          - '*'
+      security:
+        applies-to: security-updates
+        patterns:
+          - '*'
     labels:
       - 'dependencies'
       - 'ci'
 
   # Maintain Python dependencies.
   - package-ecosystem: uv
-    assignees:
-      - 'h-holm'
     directory: '/'
     schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
+      interval: monthly
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
     groups:
       minor-and-patch:
         update-types:
@@ -57,6 +57,10 @@ updates:
       major:
         update-types:
           - 'major'
+      security:
+        applies-to: security-updates
+        patterns:
+          - '*'
     labels:
       - 'dependencies'
       - 'python'
