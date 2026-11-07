@@ -7,6 +7,10 @@ authors = [{ name = "Henrik Holm", email = "no-reply@email.com" }]
 classifiers = [
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: 3.15",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
@@ -21,7 +25,7 @@ keywords = ["python", "template", "uv", "ruff", "ty"]
 license = { file = "LICENSE" }
 name = "uv-python-project-template"
 readme = "README.md"
-requires-python = ">=3.15"
+requires-python = ">=3.11"
 version = "1.0.1"
 
 [project.urls]
@@ -83,7 +87,7 @@ testpaths = ["tests"]
 [tool.ruff]
 indent-width = 4
 line-length = 120
-target-version = "py315"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["ALL"]
