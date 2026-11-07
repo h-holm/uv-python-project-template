@@ -1,5 +1,5 @@
+from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pytest
 
@@ -8,10 +8,6 @@ from uv_python_project_template.utils.utils import (
     get_time_elapsed_string,
     is_non_empty_file,
 )
-
-
-if TYPE_CHECKING:
-    from datetime import timedelta
 
 
 @pytest.mark.parametrize(
