@@ -12,6 +12,9 @@ jobs:
   code-quality-checks:
     name: Code Quality Checks
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13', '3.14', '3.15']
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
@@ -27,6 +30,7 @@ jobs:
         uses: astral-sh/setup-uv@v10.3.3
         with:
           version: ${{ steps.uv-version.outputs.version }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Print `uv` Version
         run: uv --version
