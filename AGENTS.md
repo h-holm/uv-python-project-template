@@ -4,20 +4,7 @@ This is a template repository designed to provide a standardized structure for
 Python projects.
 
 The application logic (defined under `src/uv_python_project_template`) is
-intentionally trivial, as it serves only as a placeholder. Although simple, it
-provides important fundamentals such as a sane logging set-up, a separation of
-utilities from core logic, and a clear entry point.
-
-The application logic is covered by rigorous unit tests, as well as an
-integration test that runs the end-to-end application logic using a container
-image built from the source code.
-
-## Structure
-
-* `/src`: Application source code.
-* `/tests`: Unit tests.
-* `/docs`: Documentation describing the infrastructure set-up.
-* `/.github`: GitHub Actions configurations and CI/CD workflow definitions.
+intentionally trivial, as it serves only as a placeholder.
 
 ## Libraries, Frameworks and Conventions
 
