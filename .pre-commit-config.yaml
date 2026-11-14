@@ -1,6 +1,7 @@
 # `pre-commit.ci` runs hooks without network access. The `ty` hook needs to install the project dependencies to resolve
 # imports, so skip it there. Type checking still runs in the `code-quality.yaml` GitHub Actions workflow.
 ci:
+  autoupdate_schedule: quarterly # Renovate bumps the hook revs monthly.
   skip: [ty]
 
 repos:
