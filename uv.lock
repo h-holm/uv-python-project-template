@@ -361,7 +361,7 @@ wheels = [
 
 [[package]]
 name = "uv-python-project-template"
-version = "1.0.2"
+version = "1.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "loguru" },
