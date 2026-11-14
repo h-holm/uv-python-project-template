@@ -10,6 +10,7 @@
 [![CI/CD][ci-cd-badge]][ci-cd]
 [![CodeQL][codeql-badge]][codeql-workflow]
 [![pre-commit.ci status][pre-commit-ci-badge]][pre-commit-ci]
+[![Renovate][renovate-badge]][renovate]
 
 Template repo that enables quick set-up of an end-to-end CI/CD pipeline that
 (1) tests and (2) deploys a containerized Python application. The placeholder
@@ -26,7 +27,7 @@ Python logic computes a Fibonacci number.
 - Structured logging via [Loguru][loguru]
 - [./src layout][src-layout] to separate application logic from peripherals
 - Optional quality-of-life add-ons:
-  - automated dependency updates and vulnerability scans via [Dependabot][dep]
+  - automated dependency updates and vulnerability scans via [Renovate][renovate]
   - comprehensive [prek][prek]-based pre-commit hooks
   - (further) enforcing of uniform formatting via an
     [.editorconfig](./.editorconfig)
@@ -126,6 +127,12 @@ uv lock --upgrade-package ${PACKAGE_NAME}             # Upgrade (only) the `${PA
 # Remember to commit the updated uv.lock file.
 ```
 
+[Renovate][renovate] opens one grouped PR a month that upgrades all
+dependencies: the `pyproject.toml` pins and `uv.lock`, the pre-commit hook revs,
+the GitHub Actions and the `Dockerfile` base image. To get that PR on demand,
+tick its checkbox in the "Dependency Dashboard" issue. Repos created from this
+template must install the [Renovate GitHub App][renovate-app] for this to work.
+
 ### Releasing a New Version
 
 The version in the `pyproject.toml` controls releases. To release a new
@@ -165,7 +172,6 @@ See [LICENSE](LICENSE).
 [codeql-badge]: https://github.com/h-holm/uv-python-project-template/workflows/CodeQL%20Analysis/badge.svg
 [codeql-workflow]: https://github.com/h-holm/uv-python-project-template/actions/workflows/codeql-analysis.yaml
 [coverage]: https://coverage.readthedocs.io/en/latest
-[dep]: https://github.com/dependabot
 [deploy]: https://github.com/h-holm/uv-python-project-template/actions/workflows/deploy-to-cloud-run.yaml
 [gcp-artifact-registry]: https://cloud.google.com/artifact-registry/docs
 [gcp-cloud-run]: https://cloud.google.com/run?hl=en
@@ -182,6 +188,9 @@ See [LICENSE](LICENSE).
 [pytest-badge]: https://img.shields.io/static/v1?label=%E2%80%8E&message=Pytest&logo=Pytest&color=b647c4&logoColor=white
 [python]: https://docs.python.org/3/whatsnew/3.15.html
 [python-badge]: https://img.shields.io/badge/python-3.11--3.15-blue.svg
+[renovate]: https://github.com/renovatebot/renovate
+[renovate-app]: https://github.com/apps/renovate
+[renovate-badge]: https://img.shields.io/badge/renovate-enabled-brightgreen.svg?logo=renovate
 [ruff]: https://github.com/astral-sh/ruff
 [ruff-badge]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
 [semver]: https://semver.org

@@ -1,0 +1,12 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:recommended', // Includes the Dependency Dashboard issue.
+    ':enablePreCommit', // The pre-commit manager is opt-in.
+    'group:all', // One PR for everything, majors included.
+    'schedule:monthly',
+  ],
+  minimumReleaseAge: '7 days', // Same as the previous Dependabot cooldown.
+  rebaseWhen: 'conflicted', // Fewer force-push notifications.
+  labels: ['dependencies'],
+}
