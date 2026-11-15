@@ -9,4 +9,11 @@
   minimumReleaseAge: '7 days', // Same as the previous Dependabot cooldown.
   rebaseWhen: 'conflicted', // Fewer force-push notifications.
   labels: ['dependencies'],
+  packageRules: [
+    {
+      // v0.24.0 ignores the MD013 `code_block_line_length` setting.
+      matchPackageNames: ['DavidAnson/markdownlint-cli2'],
+      allowedVersions: '!/^v?0\\.24\\.0$/',
+    },
+  ],
 }
