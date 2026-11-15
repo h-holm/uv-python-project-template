@@ -11,9 +11,9 @@
   labels: ['dependencies'],
   packageRules: [
     {
-      // v0.24.0 ignores the MD013 `code_block_line_length` setting.
+      // v0.24.0 and v0.24.1 ignore the MD013 `code_block_line_length` setting.
       matchPackageNames: ['DavidAnson/markdownlint-cli2'],
-      allowedVersions: '!/^v?0\\.24\\.0$/',
+      allowedVersions: '!/^v?0\\.24\\.[01]$/',
     },
   ],
 }
