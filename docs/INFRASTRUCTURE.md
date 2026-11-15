@@ -69,7 +69,11 @@ protected via repository rulesets, allow GitHub Actions to bypass them.
 
 The [ci-cd](../.github/workflows/ci-cd.yaml) workflow summarizes the results of
 all checks in its `CI Passed` job. To prevent merging PRs whose checks fail,
-configure `CI Passed` as the only required status check of the default branch.
+configure `CI Passed` as a required status check of the default branch.
+
+The pre-commit hooks are run by [pre-commit.ci][pre-commit-ci], which reports
+its result as a separate commit status. To also prevent merging PRs whose hooks
+fail, configure `pre-commit.ci - pr` as a second required status check.
 
 ## Required Roles
 
@@ -103,3 +107,4 @@ The workload identity provider requires:
 [github-env-deployment-refs]: https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments#deployment-branches-and-tags
 [github-envs]: https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments
 [least-privilege]: https://en.wikipedia.org/wiki/Principle_of_least_privilege
+[pre-commit-ci]: https://pre-commit.ci
